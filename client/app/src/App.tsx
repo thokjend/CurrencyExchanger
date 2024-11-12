@@ -32,6 +32,16 @@ function App() {
     }
   };
 
+  const getConvertionRate = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}`
+      );
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
   useEffect(() => {
     getCurrencies();
   }, []);

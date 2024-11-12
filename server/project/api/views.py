@@ -13,3 +13,12 @@ def get_currencies(request):
         return Response({"error": "Failed to fetch currency data"}, status=500)
 
 
+@api_view(["GET"])
+def get_convertion_rates(request,base):
+    try:
+        response = requests.get(f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{base}.json")
+        response.raise_for_status()
+        data = response.json()
+        return Response(data)
+    except requests.RequestException as e:
+        return Response({"error": "Failed to fetch currency data"}, status=500)
