@@ -7,10 +7,11 @@ interface CurrencyOption {
 }
 
 function App() {
-  const [ammount, setAmmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(0);
   const [convertFrom, setConvertFrom] = useState<CurrencyOption | null>(null);
   const [convertTo, setConvertTo] = useState<CurrencyOption | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
+  const [conversionRates, setConversionRates] = useState([]);
 
   const getCurrencies = async () => {
     try {
@@ -26,17 +27,24 @@ function App() {
       }));
 
       setCurrencies(currencyOptions);
-      console.log(currencies);
+      //console.log(currencies);
     } catch (error) {
       console.error("Fetch error:", error);
     }
   };
 
   const getConvertionRate = async () => {
+    if (!convertFrom) return;
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}`
+        `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}/`
       );
+      if (!response.ok) {
+        throw new Error("Failed to fetch convertion rate data");
+      }
+
+      const data = await response.json();
+      setConversionRates(data);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -52,7 +60,7 @@ function App() {
         <input
           type="number"
           placeholder="ammount"
-          onChange={(e) => setAmmount(Number(e.target.value))}
+          onChange={(e) => setAmount(Number(e.target.value))}
         />
         <div style={{ maxWidth: "300px" }}>
           <Select
@@ -68,8 +76,7 @@ function App() {
             onChange={(selectedOption) => setConvertTo(selectedOption)}
           />
         </div>
-
-        <button onClick={() => console.log(convertTo?.value)}>Convert</button>
+        <button onClick={() => getConvertionRate()}>Convert</button>
       </div>
     </>
   );
