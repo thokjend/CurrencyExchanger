@@ -53,6 +53,11 @@ function App() {
     }
   };
 
+  const swapCurrencies = () => {
+    setConvertFrom(convertTo);
+    setConvertTo(convertFrom);
+  };
+
   useEffect(() => {
     getCurrencies();
   }, []);
@@ -80,7 +85,7 @@ function App() {
           />
         </div>
         <div>
-          <button className="btn btn-primary" /* onClick={() => switch()} */>
+          <button className="btn btn-primary" onClick={() => swapCurrencies()}>
             ⇆
           </button>
         </div>
