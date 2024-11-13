@@ -57,13 +57,13 @@ function App() {
     getCurrencies();
   }, []);
 
-  const convertedAmount = amount * (conversionRates?.[convertTo?.value] || 0);
+  const convertedAmount = amount * conversionRates?.[convertTo?.value];
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
-      <h1 className="mb-5">Currency Converter</h1>
-      <div className="text-center d-flex flex-row">
-        <div className="">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-secondary">
+      <h1 className="mb-5 text-light">Currency Converter</h1>
+      <div className="text-center d-flex flex-row h-25 justify-content-center align-items-center border border-primary p-5 rounded bg-light">
+        <div className="m-2 d-flex">
           <input
             type="number"
             min={0}
@@ -72,14 +72,19 @@ function App() {
             onChange={(e) => setAmount(Number(e.target.value))}
           />
         </div>
-        <div className="" style={{ width: "300px", margin: "auto" }}>
+        <div className="m-2" style={{ width: "300px" }}>
           <Select
             options={currencies}
             value={convertFrom}
             onChange={(selectedOption) => setConvertFrom(selectedOption)}
           />
         </div>
-        <div className="" style={{ width: "300px", margin: "auto" }}>
+        <div>
+          <button className="btn btn-primary" /* onClick={() => switch()} */>
+            ⇆
+          </button>
+        </div>
+        <div className="m-2" style={{ width: "300px" }}>
           <Select
             options={currencies}
             value={convertTo}
