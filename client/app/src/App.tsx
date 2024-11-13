@@ -11,7 +11,10 @@ function App() {
   const [convertFrom, setConvertFrom] = useState<CurrencyOption | null>(null);
   const [convertTo, setConvertTo] = useState<CurrencyOption | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
-  const [conversionRates, setConversionRates] = useState([]);
+  const [conversionRates, setConversionRates] = useState<Record<
+    string,
+    number
+  > | null>(null);
 
   const getCurrencies = async () => {
     try {
@@ -44,7 +47,8 @@ function App() {
       }
 
       const data = await response.json();
-      setConversionRates(data);
+      setConversionRates(data[convertFrom.value]);
+      console.log(conversionRates?.[convertTo?.value || ""]);
     } catch (error) {
       console.error("Fetch error:", error);
     }
