@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 interface CurrencyOption {
   value: string;
@@ -30,7 +31,6 @@ function App() {
       }));
 
       setCurrencies(currencyOptions);
-      //console.log(currencies);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -43,12 +43,11 @@ function App() {
         `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}/`
       );
       if (!response.ok) {
-        throw new Error("Failed to fetch convertion rate data");
+        throw new Error("Failed to fetch conversion rate data");
       }
 
       const data = await response.json();
       setConversionRates(data[convertFrom.value]);
-      console.log(conversionRates?.[convertTo?.value || ""]);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -58,31 +57,45 @@ function App() {
     getCurrencies();
   }, []);
 
+  const convertedAmount = amount * (conversionRates?.[convertTo?.value] || 0);
+
   return (
-    <>
-      <div>
-        <input
-          type="number"
-          placeholder="ammount"
-          onChange={(e) => setAmount(Number(e.target.value))}
-        />
-        <div style={{ maxWidth: "300px" }}>
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
+      <h1 className="mb-5">Currency Converter</h1>
+      <div className="text-center d-flex flex-row">
+        <div className="">
+          <input
+            type="number"
+            min={0}
+            className="form-control"
+            placeholder="Amount"
+            onChange={(e) => setAmount(Number(e.target.value))}
+          />
+        </div>
+        <div className="" style={{ width: "300px", margin: "auto" }}>
           <Select
             options={currencies}
             value={convertFrom}
             onChange={(selectedOption) => setConvertFrom(selectedOption)}
           />
         </div>
-        <div style={{ maxWidth: "300px" }}>
+        <div className="" style={{ width: "300px", margin: "auto" }}>
           <Select
             options={currencies}
             value={convertTo}
             onChange={(selectedOption) => setConvertTo(selectedOption)}
           />
         </div>
-        <button onClick={() => getConvertionRate()}>Convert</button>
+        <button className="btn btn-primary" onClick={() => getConvertionRate()}>
+          Convert
+        </button>
       </div>
-    </>
+      {convertedAmount > 0 && (
+        <div className="mt-3">
+          <p>Converted amount: {convertedAmount.toFixed(2)}</p>
+        </div>
+      )}
+    </div>
   );
 }
 
