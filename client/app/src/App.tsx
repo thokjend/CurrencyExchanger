@@ -12,6 +12,7 @@ function App() {
   const [convertFrom, setConvertFrom] = useState<CurrencyOption | null>(null);
   const [convertTo, setConvertTo] = useState<CurrencyOption | null>(null);
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
+  const [date, setDate] = useState("");
   const [conversionRates, setConversionRates] = useState<Record<
     string,
     number
@@ -48,6 +49,7 @@ function App() {
 
       const data = await response.json();
       setConversionRates(data[convertFrom.value]);
+      setDate(data.date);
     } catch (error) {
       console.error("Fetch error:", error);
     }
@@ -74,6 +76,12 @@ function App() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark">
       <div className="mb-5 text-light fs-1 fw-bolder">Currency Converter</div>
+      {/* Date Display */}
+      {date && (
+        <div className="text-light mb-4">
+          Last updated: <span className="fw-bold">{date}</span>
+        </div>
+      )}
       <div className="text-center d-flex flex-row h-25 justify-content-center align-items-center border border-light p-5 rounded bg-dark">
         <div className="m-2 d-flex">
           <input
