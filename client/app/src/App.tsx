@@ -82,34 +82,45 @@ function App() {
           Last updated: <span className="fw-bold">{date}</span>
         </div>
       )}
-      <div className="text-center d-flex flex-row h-25 justify-content-center align-items-center border border-light p-5 rounded bg-dark">
-        <div className="m-2 d-flex">
-          <input
-            type="number"
-            min={0}
-            className="form-control"
-            placeholder="Amount"
-            onChange={(e) => setAmount(Number(e.target.value))}
-          />
+      <div className="text-center d-flex flex-column h-25 justify-content-center align-items-center border border-light p-5 rounded bg-dark">
+        <div className="row text-light mb-2 w-100 fw-bold fs-4">
+          <div className="col-2 text-start">Amount</div>
+          <div className="col-6">From</div>
+          <div className="col-4 text-center">To</div>
         </div>
-        <div className="m-2" style={{ width: "300px" }}>
-          <Select
-            options={currencies}
-            value={convertFrom}
-            onChange={(selectedOption) => setConvertFrom(selectedOption)}
-          />
-        </div>
-        <div>
-          <button className="btn btn-primary" onClick={() => swapCurrencies()}>
-            ⇆
-          </button>
-        </div>
-        <div className="m-2" style={{ width: "300px" }}>
-          <Select
-            options={currencies}
-            value={convertTo}
-            onChange={(selectedOption) => setConvertTo(selectedOption)}
-          />
+
+        <div className="d-flex flex-row align-items-center border">
+          <div className="m-2 d-flex">
+            <input
+              type="number"
+              min={0}
+              className="form-control"
+              placeholder="Amount"
+              onChange={(e) => setAmount(Number(e.target.value))}
+            />
+          </div>
+          <div className="m-2" style={{ width: "300px" }}>
+            <Select
+              options={currencies}
+              value={convertFrom}
+              onChange={(selectedOption) => setConvertFrom(selectedOption)}
+            />
+          </div>
+          <div>
+            <button
+              className="btn btn-primary"
+              onClick={() => swapCurrencies()}
+            >
+              ⇆
+            </button>
+          </div>
+          <div className="m-2" style={{ width: "300px" }}>
+            <Select
+              options={currencies}
+              value={convertTo}
+              onChange={(selectedOption) => setConvertTo(selectedOption)}
+            />
+          </div>
         </div>
       </div>
       {convertedAmount > 0 && (
