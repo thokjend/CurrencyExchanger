@@ -62,12 +62,19 @@ function App() {
     getCurrencies();
   }, []);
 
-  const convertedAmount = amount * conversionRates?.[convertTo?.value];
+  useEffect(() => {
+    getConvertionRate();
+  }, [convertTo, convertFrom]);
+
+  const convertedAmount =
+    convertTo && conversionRates
+      ? amount * conversionRates[convertTo.value]
+      : 0;
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-secondary">
-      <h1 className="mb-5 text-light">Currency Converter</h1>
-      <div className="text-center d-flex flex-row h-25 justify-content-center align-items-center border border-primary p-5 rounded bg-light">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark">
+      <div className="mb-5 text-light fs-1 fw-bolder">Currency Converter</div>
+      <div className="text-center d-flex flex-row h-25 justify-content-center align-items-center border border-light p-5 rounded bg-dark">
         <div className="m-2 d-flex">
           <input
             type="number"
@@ -96,13 +103,13 @@ function App() {
             onChange={(selectedOption) => setConvertTo(selectedOption)}
           />
         </div>
-        <button className="btn btn-primary" onClick={() => getConvertionRate()}>
-          Convert
-        </button>
       </div>
       {convertedAmount > 0 && (
-        <div className="mt-3">
-          <p>Converted amount: {convertedAmount.toFixed(2)}</p>
+        <div className="mt-3 fs-1 fw-bold">
+          <p className="text-light">
+            {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
+            {convertTo?.label}{" "}
+          </p>
         </div>
       )}
     </div>
