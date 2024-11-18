@@ -7,6 +7,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [registerMode, setRegisterMode] = useState(false);
   const [infoText, setInfoText] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const navigate = useNavigate();
 
@@ -24,13 +25,15 @@ export default function Login() {
       }
 
       if (response?.success) {
+        setIsSuccess(true);
         setInfoText(registerMode ? "Success! Account created" : "");
         if (!registerMode) {
-          navigate("http://localhost:5173/convert");
+          navigate("/convert");
         } else {
           setRegisterMode(false);
         }
       } else {
+        setIsSuccess(false);
         setInfoText(
           registerMode
             ? "Account creation failed. User already exist."
@@ -105,7 +108,15 @@ export default function Login() {
             </div>
           )}
 
-          <div className=" fs-5 fw-bold text-danger">{infoText}</div>
+          <div
+            className={
+              isSuccess
+                ? "text-success fs-5 fw-bold"
+                : "text-danger fs-5 fw-bold"
+            }
+          >
+            {infoText}
+          </div>
         </div>
       </div>
     </div>

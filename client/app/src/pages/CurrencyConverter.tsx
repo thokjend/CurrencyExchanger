@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import { LineChart } from "@mui/x-charts";
 
 interface CurrencyOption {
   value: string;
@@ -52,6 +53,11 @@ export default function CurrencyConverter() {
     } catch (error) {
       console.error("Fetch error:", error);
     }
+  };
+
+  const conversionRatesByDate = async () => {
+    try {
+    } catch {}
   };
 
   const swapCurrencies = () => {
@@ -120,15 +126,61 @@ export default function CurrencyConverter() {
             />
           </div>
         </div>
+
+        {convertedAmount > 0 && (
+          <div className="mt-3 fs-1 fw-bold">
+            <p className="text-light">
+              {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
+              {convertTo?.label}{" "}
+            </p>
+          </div>
+        )}
       </div>
-      {convertedAmount > 0 && (
-        <div className="mt-3 fs-1 fw-bold">
-          <p className="text-light">
-            {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
-            {convertTo?.label}{" "}
-          </p>
-        </div>
-      )}
+
+      <div className="pt-5">
+        <LineChart
+          xAxis={[
+            {
+              data: [
+                new Date("2024-11-01"),
+                new Date("2024-11-02"),
+                new Date("2024-11-03"),
+                new Date("2024-11-04"),
+                new Date("2024-11-05"),
+                new Date("2024-11-06"),
+                new Date("2024-11-07"),
+                new Date("2024-11-08"),
+                new Date("2024-11-09"),
+                new Date("2024-11-10"),
+              ],
+              valueFormatter: (timestamp) =>
+                new Date(timestamp).toLocaleDateString("en-GB", {
+                  year: "numeric",
+                  month: "short",
+                  day: "2-digit",
+                }),
+            },
+          ]}
+          yAxis={[
+            {
+              label: "Value", // Label for the Y-axis
+            },
+          ]}
+          series={[
+            {
+              data: [2, 8, 4, 10, 6, 7, 8, 9, 1, 10], // Y-axis data points
+              color: "blue", // Set a custom color for the line
+              showMark: false,
+            },
+          ]}
+          width={1000} // Width of the chart
+          height={400} // Height of the chart
+          sx={{
+            backgroundColor: "white", // Dark background for contrast
+            borderRadius: "8px", // Rounded corners
+          }}
+        />
+      </div>
     </div>
   );
 }
