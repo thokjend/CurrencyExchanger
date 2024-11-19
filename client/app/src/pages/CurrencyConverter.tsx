@@ -7,6 +7,11 @@ interface CurrencyOption {
   label: string;
 }
 
+interface RateByDate {
+  date: string;
+  rate: number;
+}
+
 export default function CurrencyConverter() {
   const [amount, setAmount] = useState<number>(0);
   const [convertFrom, setConvertFrom] = useState<CurrencyOption | null>(null);
@@ -17,6 +22,11 @@ export default function CurrencyConverter() {
     string,
     number
   > | null>(null);
+
+  const [storeDates, setStoreDates] = useState<RateByDate[]>([]);
+
+  console.log(storeDates);
+  //console.log(storeDates.map((item) => item.date).length);
 
   const getCurrencies = async () => {
     try {
@@ -56,8 +66,34 @@ export default function CurrencyConverter() {
   };
 
   const conversionRatesByDate = async () => {
+    if (!convertFrom || !convertTo) return;
     try {
-    } catch {}
+      const today = new Date();
+      const rates: { date: string; rate: number }[] = [];
+
+      for (let i = 0; i <= 31; i++) {
+        const previousDate = new Date(today);
+        previousDate.setDate(today.getDate() - i);
+        const formattedDate = previousDate.toISOString().split("T")[0]; // Format date as YYYY-MM-DD
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}/${formattedDate}/`
+        );
+
+        if (!response.ok) {
+          console.error(`Failed to fetch data for ${formattedDate}`);
+          continue;
+        }
+        const data = await response.json();
+        const conversionRate = data[convertFrom.value]?.[convertTo.value];
+
+        if (conversionRate !== undefined) {
+          rates.push({ date: formattedDate, rate: conversionRate });
+        }
+      }
+      setStoreDates(rates.reverse());
+    } catch (error) {
+      console.error("Error in fetching conversion rates:", error);
+    }
   };
 
   const swapCurrencies = () => {
@@ -71,6 +107,7 @@ export default function CurrencyConverter() {
 
   useEffect(() => {
     getConvertionRate();
+    conversionRatesByDate();
   }, [convertTo, convertFrom]);
 
   const convertedAmount =
@@ -141,43 +178,39 @@ export default function CurrencyConverter() {
         <LineChart
           xAxis={[
             {
-              data: [
-                new Date("2024-11-01"),
-                new Date("2024-11-02"),
-                new Date("2024-11-03"),
-                new Date("2024-11-04"),
-                new Date("2024-11-05"),
-                new Date("2024-11-06"),
-                new Date("2024-11-07"),
-                new Date("2024-11-08"),
-                new Date("2024-11-09"),
-                new Date("2024-11-10"),
-              ],
+              data: storeDates.map((item) => new Date(item.date).getTime()),
               valueFormatter: (timestamp) =>
-                new Date(timestamp).toLocaleDateString("en-GB", {
+                new Date(timestamp).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",
                   day: "2-digit",
                 }),
+              disableLine: true,
+              disableTicks: true,
             },
           ]}
+          grid={{
+            horizontal: true,
+            vertical: true,
+          }}
           yAxis={[
             {
-              label: "Value", // Label for the Y-axis
+              disableLine: true,
+              disableTicks: true,
             },
           ]}
           series={[
             {
-              data: [2, 8, 4, 10, 6, 7, 8, 9, 1, 10], // Y-axis data points
-              color: "blue", // Set a custom color for the line
+              data: storeDates.map((item) => item.rate),
+              color: "blue",
               showMark: false,
             },
           ]}
-          width={1000} // Width of the chart
-          height={400} // Height of the chart
+          width={1000}
+          height={400}
           sx={{
-            backgroundColor: "white", // Dark background for contrast
-            borderRadius: "8px", // Rounded corners
+            backgroundColor: "white",
+            borderRadius: "8px",
           }}
         />
       </div>

@@ -16,7 +16,7 @@ def get_currencies(request):
 
 
 @api_view(["GET"])
-def get_convertion_rates(request,base):
+def get_conversion_rates(request,base):
     try:
         response = requests.get(f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/{base}.json")
         response.raise_for_status()
@@ -24,7 +24,18 @@ def get_convertion_rates(request,base):
         return Response(data)
     except requests.RequestException as e:
         return Response({"error": "Failed to fetch currency data"}, status=500)
-    
+
+@api_view(["GET"])
+def get_conversion_rates_by_date(request, base, date):
+    try:
+        response = requests.get(f"https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@{date}/v1/currencies/{base}.json")
+        response.raise_for_status()
+        data = response.json()
+        return Response(data)
+    except requests.RequestException as e:
+        return Response({"error": "Failed to fetch conversion rates"}, status=500)
+
+
 
 @api_view(["POST"])
 def register_user(request):
