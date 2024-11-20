@@ -28,7 +28,7 @@ export default function Login() {
         setIsSuccess(true);
         setInfoText(registerMode ? "Success! Account created" : "");
         if (!registerMode) {
-          navigate("/convert");
+          navigate("/main");
         } else {
           setRegisterMode(false);
         }
