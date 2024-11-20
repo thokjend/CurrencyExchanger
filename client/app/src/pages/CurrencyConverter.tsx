@@ -24,6 +24,7 @@ export default function CurrencyConverter() {
   > | null>(null);
 
   const [storeDates, setStoreDates] = useState<RateByDate[]>([]);
+  const [isDoneLoading, setIsDoneLoading] = useState(false);
 
   console.log(storeDates);
   //console.log(storeDates.map((item) => item.date).length);
@@ -93,6 +94,8 @@ export default function CurrencyConverter() {
       setStoreDates(rates.reverse());
     } catch (error) {
       console.error("Error in fetching conversion rates:", error);
+    } finally {
+      setIsDoneLoading(true);
     }
   };
 
@@ -123,7 +126,7 @@ export default function CurrencyConverter() {
           Last updated: <span className="fw-bold">{date}</span>
         </div>
       )}
-      <div className="text-center d-flex flex-column h-25 justify-content-center align-items-center border border-light p-5 rounded bg-dark">
+      <div className="text-center d-flex flex-column justify-content-center align-items-center border border-light p-5 rounded bg-dark">
         <div className="row text-light mb-2 w-100 fw-bold fs-4">
           <div className="col-2 text-start">Amount</div>
           <div className="col-6">From</div>
@@ -163,57 +166,63 @@ export default function CurrencyConverter() {
             />
           </div>
         </div>
+      </div>
+      {convertedAmount > 0 && (
+        <div className="mt-3 fs-3 fw-bold">
+          <p className="text-light">
+            {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
+            {convertTo?.label}{" "}
+          </p>
+        </div>
+      )}
 
-        {convertedAmount > 0 && (
-          <div className="mt-3 fs-1 fw-bold">
-            <p className="text-light">
-              {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
-              {convertTo?.label}{" "}
-            </p>
+      {convertTo !== null && convertFrom !== null && (
+        <div className="">
+          <div className="text-light fs-3 d-flex justify-content-center">
+            {convertFrom?.value.toUpperCase()} To{" "}
+            {convertTo?.value.toUpperCase()} Chart
           </div>
-        )}
-      </div>
-
-      <div className="pt-5">
-        <LineChart
-          xAxis={[
-            {
-              data: storeDates.map((item) => new Date(item.date).getTime()),
-              valueFormatter: (timestamp) =>
-                new Date(timestamp).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                }),
-              disableLine: true,
-              disableTicks: true,
-            },
-          ]}
-          grid={{
-            horizontal: true,
-            vertical: true,
-          }}
-          yAxis={[
-            {
-              disableLine: true,
-              disableTicks: true,
-            },
-          ]}
-          series={[
-            {
-              data: storeDates.map((item) => item.rate),
-              color: "blue",
-              showMark: false,
-            },
-          ]}
-          width={1000}
-          height={400}
-          sx={{
-            backgroundColor: "white",
-            borderRadius: "8px",
-          }}
-        />
-      </div>
+          <LineChart
+            xAxis={[
+              {
+                data: storeDates.map((item) => new Date(item.date).getTime()),
+                valueFormatter: (timestamp) =>
+                  new Date(timestamp).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                  }),
+                disableLine: true,
+                disableTicks: true,
+              },
+            ]}
+            grid={{
+              horizontal: true,
+              vertical: true,
+            }}
+            yAxis={[
+              {
+                disableLine: true,
+                disableTicks: true,
+              },
+            ]}
+            loading={!isDoneLoading ? true : false}
+            series={[
+              {
+                data: storeDates.map((item) => item.rate),
+                color: "blue",
+                showMark: false,
+              },
+            ]}
+            width={1000}
+            height={400}
+            sx={{
+              backgroundColor: "white",
+              borderRadius: "8px",
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
