@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
 import { LineChart } from "@mui/x-charts";
+import Header from "../components/Header";
 
 interface CurrencyOption {
   value: string;
@@ -119,14 +120,15 @@ export default function CurrencyConverter() {
       : 0;
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
-      <div className="mb-5 text-light fs-1 fw-bolder">Currency Converter</div>
+    <div className="d-flex flex-column justify-content-center align-items-center pt-3">
+      <Header name="Currency Converter" />
+      {/* <div className="mb-5 text-light fs-1 fw-bolder">Currency Converter</div> */}
       {date && (
-        <div className="text-light mb-4">
+        <div className="text-light mb-2">
           Last updated: <span className="fw-bold">{date}</span>
         </div>
       )}
-      <div className="text-center d-flex flex-column justify-content-center align-items-center border border-light p-5 rounded">
+      <div className="text-center d-flex flex-column justify-content-center align-items-center border border-light p-5 rounded m-3">
         <div className="row text-light mb-2 w-100 fw-bold fs-4">
           <div className="col-2 text-start">Amount</div>
           <div className="col-6">From</div>
