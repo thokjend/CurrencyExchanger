@@ -18,3 +18,17 @@ input[type="number"] {
   text-decoration: underline;
   cursor: pointer;
 }
+
+.nav-button {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+  line-height: 1.2;
+  border: 2px solid white;
+}
+
+.nav-button:hover {
+  cursor: pointer;
+  font-size: large;
+  font-weight: bolder;
+}

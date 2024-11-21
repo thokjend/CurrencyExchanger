@@ -6,7 +6,7 @@ interface HeaderProps {
 
 export default function Header({ name }: HeaderProps) {
   return (
-    <div className="text-white fs-5 fw-bold d-flex w-50 justify-content-around align-items-center">
+    <div className="text-white fs-5 d-flex w-50 justify-content-around align-items-center">
       <NavButton name="Home" page="/main" />
       <NavButton name="Create Account" page="/account" />
       <div className="fs-1 fw-bolder">{name}</div>
