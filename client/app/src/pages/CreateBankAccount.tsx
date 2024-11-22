@@ -8,6 +8,8 @@ interface CurrencyOption {
 }
 
 export default function CreateBankAccount() {
+  const [accountName, setAccountName] = useState("");
+  const [amount, setAmount] = useState("");
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
   const [currencyType, setCurrencyType] = useState<CurrencyOption | null>(null);
 
@@ -37,17 +39,19 @@ export default function CreateBankAccount() {
   return (
     <div className="d-flex flex-column justify-content-center align-items-center overflow-hidden pt-3">
       <Header name="Create Account" />
-      <div className="border p-4 rounded center">
+      <div className="border p-4 rounded center ">
         <form>
-          <div className="mb-3">
-            <label className="form-label text-light">Account name:</label>
+          <div className="mb-3 fw-bold">
+            <label className="form-label text-light ">Account name:</label>
             <input
               type="text"
-              className="form-control"
+              className="form-control fw-bold"
               placeholder="Enter account name"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-3 fw-bold">
             <label className="form-label text-light">Currency type:</label>
             <Select
               options={currencies}
@@ -55,12 +59,14 @@ export default function CreateBankAccount() {
               onChange={(selectedOption) => setCurrencyType(selectedOption)}
             />
           </div>
-          <div className="mb-3">
+          <div className="mb-3 fw-bold">
             <label className="form-label text-light">Initial Amount:</label>
             <input
               type="number"
-              className="form-control"
+              className="form-control fw-bold"
               placeholder="Enter initial amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
             />
           </div>
           <button type="submit" className="btn btn-light fw-bold fs-5 w-100">
