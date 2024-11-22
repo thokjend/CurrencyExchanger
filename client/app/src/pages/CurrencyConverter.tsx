@@ -124,7 +124,7 @@ export default function CurrencyConverter() {
       <Header name="Currency Converter" />
       {/* <div className="mb-5 text-light fs-1 fw-bolder">Currency Converter</div> */}
       {date && (
-        <div className="text-light mb-2">
+        <div className="text-light mb-1">
           Last updated: <span className="fw-bold">{date}</span>
         </div>
       )}
@@ -172,7 +172,7 @@ export default function CurrencyConverter() {
       {convertedAmount > 0 && (
         <div className="mt-3 fs-3 fw-bold">
           <p className="text-light">
-            {amount} {convertFrom?.label} = {convertedAmount.toFixed(2)}{" "}
+            {amount} {convertFrom?.label} = {convertedAmount.toFixed(3)}{" "}
             {convertTo?.label}{" "}
           </p>
         </div>

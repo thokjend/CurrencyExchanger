@@ -53,7 +53,7 @@ export default function Login() {
   };
 
   return (
-    <div className="d-flex flex-column justify-content-center align-items-center vh-100 bg-dark">
+    <div className="d-flex flex-column justify-content-center align-items-center vh-100">
       <div className="border w-25 h-25 d-flex flex-column rounded">
         <div className="text-white text-center fs-2 fw-bolder">
           {!registerMode ? "Login" : "Register"}
