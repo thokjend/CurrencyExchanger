@@ -95,3 +95,36 @@ def login_user(request):
     except Exception as e:
         print(f"Error: {e}")
         return Response({"error": "Failed to login user."}, status=500)
+
+
+@api_view(["POST"])
+def add_bank_account(request, user_id):
+    try:
+        account_name = request.data.get("AccountName")
+        currency_type = request.data.get("CurrencyType")
+        initial_amount = request.data.get("InitialAmount", 0)
+
+        if not account_name or not currency_type:
+            return Response({"error": "Account name and Currency type are required"}, status=400)
+        
+        bank_account = {
+            "accountNumber": generate_account_number(),
+            "accountName": account_name,
+            "currencyType": currency_type,
+            "initialAmount": initial_amount
+        }
+        
+        mongo_client = MongoDBClient()
+        users_collection = mongo_client.get_collection("users")
+
+        result = users_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$push": {"bankAccounts": bank_account}}
+
+            
+            )
+
+
+    except Exception as e:
+        print(f"Error:", {e})
+        return Response({"error":"Failed to create bank account."}, status=500)

@@ -9,7 +9,7 @@ interface CurrencyOption {
 
 export default function CreateBankAccount() {
   const [accountName, setAccountName] = useState("");
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState<number>();
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
   const [currencyType, setCurrencyType] = useState<CurrencyOption | null>(null);
 
@@ -29,6 +29,24 @@ export default function CreateBankAccount() {
       setCurrencies(currencyOptions);
     } catch (error) {
       console.error("Fetch error:", error);
+    }
+  };
+
+  const createAccount = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/create/account", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          AccountName: accountName,
+          CurrencyType: currencyType?.value,
+          InitialAmount: amount,
+        }),
+      });
+    } catch (error) {
+      console.error("error:", error);
     }
   };
 
@@ -63,17 +81,23 @@ export default function CreateBankAccount() {
             <label className="form-label text-light">Initial Amount:</label>
             <input
               type="number"
+              min={0}
               className="form-control fw-bold"
               placeholder="Enter initial amount"
               value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              onChange={(e) => setAmount(Number(e.target.value))}
             />
           </div>
-          <button type="submit" className="btn btn-light fw-bold fs-5 w-100">
+          <button
+            type="submit"
+            className="btn btn-light fw-bold fs-5 w-100"
+            disabled={accountName === "" || currencyType?.value === ""}
+          >
             Create Account
           </button>
         </form>
       </div>
+      {/* <button onClick={() => console.log(currencyType?.value)}>test</button> */}
     </div>
   );
 }
