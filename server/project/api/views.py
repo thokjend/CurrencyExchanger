@@ -2,7 +2,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .mongodb import MongoDBClient
 from werkzeug.security import generate_password_hash, check_password_hash
-import requests
+import requests, random, string
 
 @api_view(["GET"])
 def get_currencies(request):
@@ -96,6 +96,8 @@ def login_user(request):
         print(f"Error: {e}")
         return Response({"error": "Failed to login user."}, status=500)
 
+def generate_account_number():
+    return ''.join(random.choices(string.digits, k=10))
 
 @api_view(["POST"])
 def add_bank_account(request, user_id):
@@ -120,9 +122,12 @@ def add_bank_account(request, user_id):
         result = users_collection.update_one(
             {"_id": ObjectId(user_id)},
             {"$push": {"bankAccounts": bank_account}}
-
-            
             )
+        
+        if result.matched_count == 0:
+            return Response({"error": "User not found"}, status=404)
+
+        return Response({"message": "Bank account added successfully", "bankAccount": bank_account}, status=200)
 
 
     except Exception as e:

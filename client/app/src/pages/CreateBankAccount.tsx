@@ -58,7 +58,7 @@ export default function CreateBankAccount() {
     <div className="d-flex flex-column justify-content-center align-items-center overflow-hidden pt-3">
       <Header name="Create Account" />
       <div className="border p-4 rounded center ">
-        <form>
+        <form onSubmit={() => createAccount()}>
           <div className="mb-3 fw-bold">
             <label className="form-label text-light ">Account name:</label>
             <input
