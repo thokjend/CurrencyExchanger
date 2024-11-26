@@ -49,7 +49,7 @@ export default function Main() {
           ))
         ) : (
           <p className="text-light fs-2">
-            No accounts available. Go to create account{" "}
+            Loading accounts or no accounts available
           </p>
         )}
       </div>
