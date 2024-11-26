@@ -1,6 +1,6 @@
 interface AccountFieldProps {
   text: string;
-  value: string;
+  value: string | number;
 }
 
 export default function AccountField({ text, value }: AccountFieldProps) {

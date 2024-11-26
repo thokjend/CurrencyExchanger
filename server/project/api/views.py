@@ -141,10 +141,8 @@ def add_bank_account(request):
 
 
 @api_view(["GET"])
-def get_bank_accounts_info(request):
+def get_bank_accounts_info(request, username):
     try:
-        username = request.query_params.get("Username")
-
         if not username:
             return Response({"error": "Username is required."}, status=400)
 
