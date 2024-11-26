@@ -9,9 +9,10 @@ interface CurrencyOption {
 
 export default function CreateBankAccount() {
   const [accountName, setAccountName] = useState("");
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<string>("");
   const [currencies, setCurrencies] = useState<CurrencyOption[]>([]);
   const [currencyType, setCurrencyType] = useState<CurrencyOption | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string>("");
 
   const getCurrencies = async () => {
     try {
@@ -32,19 +33,35 @@ export default function CreateBankAccount() {
     }
   };
 
-  const createAccount = async () => {
+  const createAccount = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const username = localStorage.getItem("username");
     try {
-      const response = await fetch("http://localhost:8000/create/account", {
+      const response = await fetch("http://localhost:8000/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          Username: username,
           AccountName: accountName,
-          CurrencyType: currencyType?.value,
-          InitialAmount: amount,
+          CurrencyType: currencyType?.label,
+          InitialAmount: Number(amount),
         }),
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert(`Error: ${errorData.error}`);
+        return;
+      }
+
+      setSuccessMessage(
+        `Account "${accountName}" has been successfully created!`
+      );
+      setAccountName("");
+      setAmount("");
+      setCurrencyType(null);
     } catch (error) {
       console.error("error:", error);
     }
@@ -58,7 +75,7 @@ export default function CreateBankAccount() {
     <div className="d-flex flex-column justify-content-center align-items-center overflow-hidden pt-3">
       <Header name="Create Account" />
       <div className="border p-4 rounded center ">
-        <form onSubmit={() => createAccount()}>
+        <form onSubmit={createAccount}>
           <div className="mb-3 fw-bold">
             <label className="form-label text-light ">Account name:</label>
             <input
@@ -85,18 +102,23 @@ export default function CreateBankAccount() {
               className="form-control fw-bold"
               placeholder="Enter initial amount"
               value={amount}
-              onChange={(e) => setAmount(Number(e.target.value))}
+              onChange={(e) => setAmount(e.target.value)}
             />
           </div>
           <button
             type="submit"
             className="btn btn-light fw-bold fs-5 w-100"
-            disabled={accountName === "" || currencyType?.value === ""}
+            disabled={!accountName || !currencyType?.value}
           >
             Create Account
           </button>
         </form>
       </div>
+      {successMessage && (
+        <div className="mt-3 alert alert-success" role="alert">
+          {successMessage}
+        </div>
+      )}
       {/* <button onClick={() => console.log(currencyType?.value)}>test</button> */}
     </div>
   );

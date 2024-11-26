@@ -29,6 +29,7 @@ export default function Login() {
         setInfoText(registerMode ? "Success! Account created" : "");
         if (!registerMode) {
           navigate("/main");
+          localStorage.setItem("username", username);
         } else {
           setRegisterMode(false);
         }

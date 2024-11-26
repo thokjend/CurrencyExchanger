@@ -100,36 +100,39 @@ def generate_account_number():
     return ''.join(random.choices(string.digits, k=10))
 
 @api_view(["POST"])
-def add_bank_account(request, user_id):
+def add_bank_account(request):
     try:
+        username = request.data.get("Username")
         account_name = request.data.get("AccountName")
         currency_type = request.data.get("CurrencyType")
         initial_amount = request.data.get("InitialAmount", 0)
 
-        if not account_name or not currency_type:
-            return Response({"error": "Account name and Currency type are required"}, status=400)
-        
+        if not username or not account_name or not currency_type:
+            return Response({"error": "Username, Account name, and Currency type are required"}, status=400)
+
+        # Connect to MongoDB
+        mongo_client = MongoDBClient()
+        users_collection = mongo_client.get_collection("users")
+
+        user = users_collection.find_one({"username": username})
+        if not user:
+            return Response({"error": "User not found"}, status=404)
+
+        # Create bank account
         bank_account = {
             "accountNumber": generate_account_number(),
             "accountName": account_name,
             "currencyType": currency_type,
-            "initialAmount": initial_amount
+            "amount": initial_amount,
         }
-        
-        mongo_client = MongoDBClient()
-        users_collection = mongo_client.get_collection("users")
 
         result = users_collection.update_one(
-            {"_id": ObjectId(user_id)},
+            {"username": username},
             {"$push": {"bankAccounts": bank_account}}
-            )
-        
-        if result.matched_count == 0:
-            return Response({"error": "User not found"}, status=404)
+        )
 
         return Response({"message": "Bank account added successfully", "bankAccount": bank_account}, status=200)
 
-
     except Exception as e:
-        print(f"Error:", {e})
-        return Response({"error":"Failed to create bank account."}, status=500)
+        print(f"Error: {e}")
+        return Response({"error": "Failed to create bank account."}, status=500)
