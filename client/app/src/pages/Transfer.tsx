@@ -1,33 +1,32 @@
-/* import Header from "../components/Header";
-import Select from "react-select";
-
-export default function Transfer() {
-  return (
-    <div className="d-flex flex-column justify-content-center align-items-center pt-3">
-      <Header name="Transfer" />
-
-      <div className="text-center d-flex flex-column justify-content-center align-items-center border border-light p-5 rounded m-4 w-25">
-        <div className="text-light d-flex justify-content-around align-items-center  w-100">
-          <div>Transfer from</div>
-          <Select />
-        </div>
-      </div>
-
-      <div className="text-center d-flex flex-column justify-content-center align-items-center border border-light p-5 rounded m-4 w-25">
-        <div className="text-light d-flex justify-content-around align-items-center  w-100">
-          <div>Transfer To</div>
-          <Select />
-        </div>
-      </div>
-    </div>
-  );
-}
- */
-
 import Header from "../components/Header";
 import Select from "react-select";
+import { getBankAccountInfo } from "../services/AccountInfoService";
+import { useEffect, useState } from "react";
+
+interface AccountInfo {
+  accountName: string;
+  accountNumber: string;
+  currencyType: string;
+  amount: number;
+}
 
 export default function Transfer() {
+  const [accountInfo, setAccountInfo] = useState<AccountInfo[]>([]);
+
+  const fetchBankData = async () => {
+    const username = localStorage.getItem("username");
+    try {
+      const data = await getBankAccountInfo(username);
+      setAccountInfo(data);
+    } catch (error) {
+      console.error("Error fetching account data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchBankData();
+  }, []);
+
   return (
     <div className="d-flex flex-column align-items-center pt-3">
       <Header name="Transfer" />
