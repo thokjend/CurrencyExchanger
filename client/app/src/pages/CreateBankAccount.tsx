@@ -107,7 +107,7 @@ export default function CreateBankAccount() {
           </div>
           <button
             type="submit"
-            className="btn btn-light fw-bold fs-5 w-100"
+            className="btn btn-primary fw-bold fs-5 w-100 mt-2"
             disabled={!accountName || !currencyType?.value}
           >
             Create Account

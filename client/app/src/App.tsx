@@ -4,6 +4,7 @@ import CurrencyConverter from "./pages/CurrencyConverter";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import CreateBankAccount from "./pages/CreateBankAccount";
+import Transfer from "./pages/Transfer";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/main" element={<Main />} />
         <Route path="/account" element={<CreateBankAccount />} />
         <Route path="/convert" element={<CurrencyConverter />} />
+        <Route path="/transfer" element={<Transfer />} />
       </Routes>
     </Router>
   );
