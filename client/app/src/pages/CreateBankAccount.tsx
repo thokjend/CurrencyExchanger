@@ -45,7 +45,7 @@ export default function CreateBankAccount() {
         body: JSON.stringify({
           Username: username,
           AccountName: accountName,
-          CurrencyType: currencyType?.label,
+          CurrencyType: currencyType?.value.toUpperCase(),
           InitialAmount: Number(amount),
         }),
       });

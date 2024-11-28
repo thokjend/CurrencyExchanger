@@ -135,12 +135,12 @@ export default function CurrencyConverter() {
           <div className="col-4 text-center">To</div>
         </div>
 
-        <div className="d-flex flex-row align-items-center border">
+        <div className="d-flex flex-row align-items-center border fw-bold">
           <div className="m-2 d-flex">
             <input
               type="number"
               min={0}
-              className="form-control"
+              className="form-control fw-bold"
               placeholder="Amount"
               onChange={(e) => setAmount(Number(e.target.value))}
             />
@@ -216,7 +216,7 @@ export default function CurrencyConverter() {
                 showMark: false,
               },
             ]}
-            width={1000}
+            width={1025}
             height={400}
             sx={{
               backgroundColor: "white",
