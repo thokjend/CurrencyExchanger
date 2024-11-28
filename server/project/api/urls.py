@@ -8,5 +8,6 @@ urlpatterns = [
     path('register', views.register_user, name="register_user"),
     path('login', views.login_user, name="login_user"),
     path('create', views.add_bank_account, name="add_bank_account"),
-    path('account/info/<str:username>/', views.get_bank_accounts_info, name="get_bank_accounts_info")
+    path('account/info/<str:username>/', views.get_bank_accounts_info, name="get_bank_accounts_info"),
+    path('transfer', views.transfer, name="transfer")
 ]
