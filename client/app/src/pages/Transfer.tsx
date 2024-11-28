@@ -22,6 +22,7 @@ export default function Transfer() {
   >([]);
   const [transferFrom, setTransferFrom] = useState<Option | null>(null);
   const [transferTo, setTransferTo] = useState<Option | null>(null);
+  const [amount, setAmount] = useState<Number>(0);
 
   const fetchBankData = async () => {
     const username = localStorage.getItem("username");
@@ -36,6 +37,24 @@ export default function Transfer() {
       setAccountOptions(options);
     } catch (error) {
       console.error("Error fetching account data:", error);
+    }
+  };
+
+  const transferAmount = async () => {
+    try {
+      const response = await fetch("http://localhost:8000/transfer/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          TransferFrom: transferFrom?.value,
+          TransferTo: transferTo?.value,
+          Amount: amount,
+        }),
+      });
+    } catch (error) {
+      console.error("Error transfering funds:", error);
     }
   };
 
@@ -84,13 +103,19 @@ export default function Transfer() {
             Amount
           </label>
           <div>
-            <input type="number" className="w-100 fw-bold fs-5" />
+            <input
+              style={{ height: "40px" }}
+              type="number"
+              className="w-100 fw-bold rounded ps-2"
+              placeholder="Select amount to transfer"
+              onChange={(e) => setAmount(Number(e.target.value))}
+            />
           </div>
         </div>
         <div className="text-center mt-4">
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
-            onClick={() => console.log(transferTo?.value)}
+            onClick={() => console.log(amount)}
           >
             Transfer
           </button>

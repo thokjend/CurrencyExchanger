@@ -160,3 +160,17 @@ def get_bank_accounts_info(request, username):
     except Exception as e:
         print(f"Error", {e})
         return Response({"error": "Failed to fetch bank account information"}, status=500)
+    
+
+""" 
+@api_view("POST")
+def transferAmount(request):
+    try:
+        transfer_from_account = request.data.get("Username")
+        transfer_to_account = request.data.get("Password")
+        amount = request.data.get("Amount")
+
+
+    except Exception as e:
+        print(f"Error", {e})
+        return Response({"error": "Failed to transfer selected amount"}, status=500) """
