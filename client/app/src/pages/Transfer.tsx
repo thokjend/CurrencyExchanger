@@ -17,50 +17,70 @@ interface Option {
 
 export default function Transfer() {
   const [accountInfo, setAccountInfo] = useState<AccountInfo[]>([]);
-  const [accountOptions, setAccountOptions] = useState<
-    { label: string; value: string }[]
-  >([]);
   const [transferFrom, setTransferFrom] = useState<Option | null>(null);
   const [transferTo, setTransferTo] = useState<Option | null>(null);
-  const [amount, setAmount] = useState<Number>(0);
+  const [amount, setAmount] = useState<number>(0);
 
   const fetchBankData = async () => {
     const username = localStorage.getItem("username");
     try {
       const data: AccountInfo[] = await getBankAccountInfo(username);
       setAccountInfo(data);
-
-      const options = data.map((account) => ({
-        label: `${account.accountNumber} - ${account.accountName} (${account.amount} ${account.currencyType})`,
-        value: account.accountNumber,
-      }));
-      setAccountOptions(options);
     } catch (error) {
       console.error("Error fetching account data:", error);
     }
   };
 
   const transferAmount = async () => {
+    const username = localStorage.getItem("username");
+
+    if (transferFrom?.value === transferTo?.value) {
+      alert("You cannot transfer to the same account.");
+      return;
+    }
+
+    if (amount <= 0) {
+      alert("Amount must be greater than zero.");
+      return;
+    }
+
     try {
-      const response = await fetch("http://localhost:8000/transfer/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          TransferFrom: transferFrom?.value,
-          TransferTo: transferTo?.value,
-          Amount: amount,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:8000/transfer/${username}/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            TransferFromAccount: transferFrom?.value,
+            TransferToAccount: transferTo?.value,
+            Amount: amount,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(data.message || "Transfer successful!");
+        fetchBankData();
+      } else {
+        alert(data.error || "Transfer failed. Please try again.");
+      }
     } catch (error) {
       console.error("Error transfering funds:", error);
     }
   };
 
+  const accountOptions = accountInfo.map((account) => ({
+    label: `${account.accountNumber} - ${account.accountName} (${account.amount} ${account.currencyType})`,
+    value: account.accountNumber,
+  }));
+
   useEffect(() => {
     fetchBankData();
-    console.log(accountInfo);
+    //console.log(accountInfo);
   }, []);
 
   return (
@@ -77,6 +97,7 @@ export default function Transfer() {
               id="transferFrom"
               placeholder="Select an account"
               options={accountOptions}
+              value={transferFrom}
               onChange={(selectedOption: SingleValue<Option>) =>
                 setTransferFrom(selectedOption)
               }
@@ -91,6 +112,7 @@ export default function Transfer() {
             <Select
               id="transferTo"
               placeholder="Select an account"
+              value={transferTo}
               options={accountOptions}
               onChange={(selectedOption: SingleValue<Option>) =>
                 setTransferTo(selectedOption)
@@ -106,6 +128,7 @@ export default function Transfer() {
             <input
               style={{ height: "40px" }}
               type="number"
+              min={0}
               className="w-100 fw-bold rounded ps-2"
               placeholder="Select amount to transfer"
               onChange={(e) => setAmount(Number(e.target.value))}
@@ -115,7 +138,8 @@ export default function Transfer() {
         <div className="text-center mt-4">
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
-            onClick={() => console.log(amount)}
+            onClick={() => transferAmount()}
+            disabled={!transferFrom || !transferTo}
           >
             Transfer
           </button>

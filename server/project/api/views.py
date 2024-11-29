@@ -164,12 +164,30 @@ def get_bank_accounts_info(request, username):
 
 
 @api_view(["POST"])
-def transfer(request):
+def transfer(request, username):
     try:
-        transfer_from_account = request.data.get("Username")
-        transfer_to_account = request.data.get("Password")
-        amount = request.data.get("Amount")
+        transfer_from_account = request.data.get("TransferFromAccount")
+        transfer_to_account = request.data.get("TransferToAccount")
+        amount = float(request.data.get("Amount", 0))
 
+        if amount <= 0:
+            return Response({"error": "Transfer amount must be greater than zero"}, status=400)
+
+        mongo_client = MongoDBClient()
+        users_collection = mongo_client.get_collection("users")
+
+        # transfer amount from account
+        filter_from = {"username" : username, "bankAccounts.accountNumber": transfer_from_account}
+        update_from = {"$inc": {"bankAccounts.$.amount": -amount}}
+        transfer_from_result = users_collection.update_one(filter_from, update_from)
+
+        filter_to = {"username" : username, "bankAccounts.accountNumber": transfer_to_account}
+        update_to = {"$inc": {"bankAccounts.$.amount": amount}}
+        transfer_to_result = users_collection.update_one(filter_to, update_to)
+
+        return Response({"message": "Amount successfully transfered"}, status=200)
+
+        
 
     except Exception as e:
         print(f"Error", {e})
