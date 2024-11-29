@@ -64,7 +64,7 @@ export default function Transfer() {
 
       if (response.ok) {
         alert(data.message || "Transfer successful!");
-        fetchBankData();
+        await fetchBankData();
       } else {
         alert(data.error || "Transfer failed. Please try again.");
       }
@@ -80,8 +80,23 @@ export default function Transfer() {
 
   useEffect(() => {
     fetchBankData();
-    //console.log(accountInfo);
   }, []);
+
+  useEffect(() => {
+    if (transferFrom) {
+      const updatedTransferFrom = accountOptions.find(
+        (option) => option.value === transferFrom.value
+      );
+      setTransferFrom(updatedTransferFrom || null);
+    }
+
+    if (transferTo) {
+      const updatedTransferTo = accountOptions.find(
+        (option) => option.value === transferTo.value
+      );
+      setTransferTo(updatedTransferTo || null);
+    }
+  }, [accountInfo]);
 
   return (
     <div className="d-flex flex-column align-items-center pt-3">
@@ -144,6 +159,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
+        {/* <button onClick={() => console.log(transferTo)}>Test</button> */}
       </div>
     </div>
   );
