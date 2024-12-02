@@ -21,6 +21,31 @@ export default function Transfer() {
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
 
+  /*  const getConvertionRate = async () => {
+    if (!convertFrom) return;
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}/`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversion rate data");
+      }
+
+      const data = await response.json();
+      setConversionRates(data[convertFrom.value]);
+      setDate(data.date);
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  }; */
+
+  const getTransferData = (transferData: Option | null) => {
+    const data = transferData?.label.match(/\((.*?)\)/)?.[1].split(" ");
+    const availableAmount = data ? Number(data[0]) : 0;
+    const currencyType = data ? data[1].toLowerCase() : "";
+    return { availableAmount, currencyType };
+  };
+
   const fetchBankData = async () => {
     const username = localStorage.getItem("username");
     try {
@@ -33,9 +58,15 @@ export default function Transfer() {
 
   const transferAmount = async () => {
     const username = localStorage.getItem("username");
+    const transferFromData = getTransferData(transferFrom);
 
     if (transferFrom?.value === transferTo?.value) {
       alert("You cannot transfer to the same account.");
+      return;
+    }
+
+    if (amount > transferFromData.availableAmount) {
+      alert("Insufficient funds");
       return;
     }
 
@@ -159,7 +190,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {/* <button onClick={() => console.log(transferTo)}>Test</button> */}
+        <button onClick={() => console.log(transferTo)}>Test</button>
       </div>
     </div>
   );
