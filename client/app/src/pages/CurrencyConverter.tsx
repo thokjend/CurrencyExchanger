@@ -49,7 +49,7 @@ export default function CurrencyConverter() {
     }
   };
 
-  const getConvertionRate = async () => {
+  const getConversionRate = async () => {
     if (!convertFrom) return;
     try {
       const response = await fetch(
@@ -110,7 +110,7 @@ export default function CurrencyConverter() {
   }, []);
 
   useEffect(() => {
-    getConvertionRate();
+    getConversionRate();
     conversionRatesByDate();
   }, [convertTo, convertFrom]);
 

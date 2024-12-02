@@ -169,6 +169,7 @@ def transfer(request, username):
         transfer_from_account = request.data.get("TransferFromAccount")
         transfer_to_account = request.data.get("TransferToAccount")
         amount = float(request.data.get("Amount", 0))
+        converted_amount = float(request.data.get("ConvertedAmount", 0))
 
         if amount <= 0:
             return Response({"error": "Transfer amount must be greater than zero"}, status=400)
@@ -182,7 +183,7 @@ def transfer(request, username):
         transfer_from_result = users_collection.update_one(filter_from, update_from)
 
         filter_to = {"username" : username, "bankAccounts.accountNumber": transfer_to_account}
-        update_to = {"$inc": {"bankAccounts.$.amount": amount}}
+        update_to = {"$inc": {"bankAccounts.$.amount": converted_amount}}
         transfer_to_result = users_collection.update_one(filter_to, update_to)
 
         return Response({"message": "Amount successfully transfered"}, status=200)

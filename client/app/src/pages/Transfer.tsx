@@ -21,23 +21,26 @@ export default function Transfer() {
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
 
-  /*  const getConvertionRate = async () => {
-    if (!convertFrom) return;
+  const getConversionRate = async (
+    fromCurrencyType: string,
+    toCurrencyType: string
+  ): Promise<number | null> => {
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/currencies/${convertFrom?.value}/`
+        `http://127.0.0.1:8000/api/currencies/${fromCurrencyType}/`
       );
       if (!response.ok) {
         throw new Error("Failed to fetch conversion rate data");
       }
-
       const data = await response.json();
-      setConversionRates(data[convertFrom.value]);
-      setDate(data.date);
+      /* console.log(data[fromCurrencyType][toCurrencyType]);
+      console.log(toCurrencyType); */
+      return data[fromCurrencyType][toCurrencyType]; // Return the conversion rate to the target currency
     } catch (error) {
       console.error("Fetch error:", error);
+      return null; // Return null on failure
     }
-  }; */
+  };
 
   const getTransferData = (transferData: Option | null) => {
     const data = transferData?.label.match(/\((.*?)\)/)?.[1].split(" ");
@@ -59,6 +62,7 @@ export default function Transfer() {
   const transferAmount = async () => {
     const username = localStorage.getItem("username");
     const transferFromData = getTransferData(transferFrom);
+    const transferToData = getTransferData(transferTo);
 
     if (transferFrom?.value === transferTo?.value) {
       alert("You cannot transfer to the same account.");
@@ -74,8 +78,26 @@ export default function Transfer() {
       alert("Amount must be greater than zero.");
       return;
     }
+    let amountToTransfer = amount;
+    let convertedAmountToTransfer = amount;
 
     try {
+      // Check if currencies are different and convert if necessary
+      if (transferFromData.currencyType !== transferToData.currencyType) {
+        const conversionRate = await getConversionRate(
+          transferFromData.currencyType,
+          transferToData.currencyType
+        );
+
+        if (!conversionRate) {
+          alert("Failed to fetch conversion rate. Transfer aborted.");
+          return;
+        }
+
+        convertedAmountToTransfer = amount * conversionRate;
+      }
+
+      // Send transfer request to the backend
       const response = await fetch(
         `http://localhost:8000/transfer/${username}/`,
         {
@@ -86,7 +108,8 @@ export default function Transfer() {
           body: JSON.stringify({
             TransferFromAccount: transferFrom?.value,
             TransferToAccount: transferTo?.value,
-            Amount: amount,
+            Amount: amountToTransfer,
+            ConvertedAmount: convertedAmountToTransfer.toFixed(2),
           }),
         }
       );
@@ -100,12 +123,14 @@ export default function Transfer() {
         alert(data.error || "Transfer failed. Please try again.");
       }
     } catch (error) {
-      console.error("Error transfering funds:", error);
+      console.error("Error transferring funds:", error);
     }
   };
 
   const accountOptions = accountInfo.map((account) => ({
-    label: `${account.accountNumber} - ${account.accountName} (${account.amount} ${account.currencyType})`,
+    label: `${account.accountNumber} - ${
+      account.accountName
+    } (${account.amount.toFixed(2)} ${account.currencyType})`,
     value: account.accountNumber,
   }));
 
@@ -190,7 +215,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        <button onClick={() => console.log(transferTo)}>Test</button>
+        {/* <button onClick={() => console.log(transferTo)}>Test</button> */}
       </div>
     </div>
   );
