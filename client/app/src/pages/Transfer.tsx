@@ -20,6 +20,7 @@ export default function Transfer() {
   const [transferFrom, setTransferFrom] = useState<Option | null>(null);
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
+  const [useExternalAccount, setUseExternalAccount] = useState(false);
 
   const getConversionRate = async (
     fromCurrencyType: string,
@@ -109,7 +110,7 @@ export default function Transfer() {
             TransferFromAccount: transferFrom?.value,
             TransferToAccount: transferTo?.value,
             Amount: amountToTransfer,
-            ConvertedAmount: convertedAmountToTransfer.toFixed(2),
+            ConvertedAmount: convertedAmountToTransfer,
           }),
         }
       );
@@ -177,18 +178,47 @@ export default function Transfer() {
         </div>
         <div className="mb-3">
           <label htmlFor="transferTo" className="form-label">
-            Transfer To
+            <span>Transfer To</span>
+            <div>
+              <input
+                type="checkbox"
+                id="externalAccountCheckbox"
+                className="form-check-input"
+                onChange={() => {
+                  if (useExternalAccount === false) {
+                    setUseExternalAccount(true);
+                  } else {
+                    setUseExternalAccount(false);
+                  }
+                }}
+              />
+              <label
+                htmlFor="externalAccountCheckbox"
+                className="form-check-label ms-2"
+              >
+                External Account
+              </label>
+            </div>
           </label>
           <div className="text-dark">
-            <Select
-              id="transferTo"
-              placeholder="Select an account"
-              value={transferTo}
-              options={accountOptions}
-              onChange={(selectedOption: SingleValue<Option>) =>
-                setTransferTo(selectedOption)
-              }
-            />
+            {useExternalAccount ? (
+              <input
+                style={{ height: "40px" }}
+                type="number"
+                className="w-100 fw-bold rounded ps-2"
+                placeholder="Enter account number"
+              />
+            ) : (
+              <Select
+                id="transferTo"
+                placeholder="Select an account"
+                value={transferTo}
+                options={accountOptions}
+                onChange={(selectedOption: SingleValue<Option>) =>
+                  setTransferTo(selectedOption)
+                }
+              />
+            )}
           </div>
         </div>
         <div className="mb-3">
@@ -215,7 +245,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {/* <button onClick={() => console.log(transferTo)}>Test</button> */}
+        {/*  {<button onClick={() => console.log(useExternalAccount)}>Test</button>} */}
       </div>
     </div>
   );

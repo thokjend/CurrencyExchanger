@@ -45,6 +45,7 @@ export default function CreateBankAccount() {
         body: JSON.stringify({
           Username: username,
           AccountName: accountName,
+          CurrencyName: currencyType?.label,
           CurrencyType: currencyType?.value.toUpperCase(),
           InitialAmount: Number(amount),
         }),
@@ -117,7 +118,7 @@ export default function CreateBankAccount() {
       {successMessage && (
         <div className="mt-3 alert alert-success">{successMessage}</div>
       )}
-      {/* <button onClick={() => console.log(currencyType?.value)}>test</button> */}
+      {/* {<button onClick={() => console.log(currencyType?.label)}>test</button>} */}
     </div>
   );
 }

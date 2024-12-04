@@ -104,6 +104,7 @@ def add_bank_account(request):
     try:
         username = request.data.get("Username")
         account_name = request.data.get("AccountName")
+        currency_name = request.data.get("CurrencyName")
         currency_type = request.data.get("CurrencyType")
         initial_amount = request.data.get("InitialAmount", 0)
 
@@ -122,6 +123,7 @@ def add_bank_account(request):
         bank_account = {
             "accountNumber": generate_account_number(),
             "accountName": account_name,
+            "currencyName": currency_name,
             "currencyType": currency_type,
             "amount": initial_amount,
         }

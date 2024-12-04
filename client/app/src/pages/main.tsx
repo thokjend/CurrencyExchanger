@@ -38,7 +38,7 @@ export default function Main() {
               accountName={account.accountName}
               accountNumber={account.accountNumber}
               currencyType={account.currencyType}
-              amount={account.amount}
+              amount={Number(account.amount.toFixed(2))}
             />
           ))
         ) : (
