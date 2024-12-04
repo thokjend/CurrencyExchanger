@@ -187,7 +187,10 @@ export default function Transfer() {
                 className="form-check-input"
                 value={transferTo?.value}
                 checked={useExternalAccount}
-                onChange={() => setUseExternalAccount((prev) => !prev)}
+                onChange={() => {
+                  setUseExternalAccount((prev) => !prev);
+                  setTransferTo(null);
+                }}
               />
               <label
                 htmlFor="externalAccountCheckbox"
@@ -249,7 +252,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
+        {/* {<button onClick={() => console.log(transferTo?.value)}>Test</button>} */}
       </div>
     </div>
   );

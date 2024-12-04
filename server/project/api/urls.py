@@ -7,7 +7,7 @@ urlpatterns = [
     path('api/currencies/<str:base>/<str:date>/', views.get_conversion_rates_by_date, name='get_conversion_rates_by_date'),
     path('register', views.register_user, name="register_user"),
     path('login', views.login_user, name="login_user"),
-    path('create', views.add_bank_account, name="add_bank_account"),
+    path('create', views.create_bank_account, name="add_bank_account"),
     path('account/info/<str:username>/', views.get_bank_accounts_info, name="get_bank_accounts_info"),
     path('transfer/<str:username>/', views.transfer, name="transfer")
 ]

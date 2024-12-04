@@ -100,7 +100,7 @@ def generate_account_number():
     return ''.join(random.choices(string.digits, k=10))
 
 @api_view(["POST"])
-def add_bank_account(request):
+def create_bank_account(request):
     try:
         username = request.data.get("Username")
         account_name = request.data.get("AccountName")
@@ -114,11 +114,12 @@ def add_bank_account(request):
         # Connect to MongoDB
         mongo_client = MongoDBClient()
         users_collection = mongo_client.get_collection("users")
+        account_collection = mongo_client.get_collection("accounts")
 
         user = users_collection.find_one({"username": username})
         if not user:
             return Response({"error": "User not found"}, status=404)
-
+        
         # Create bank account
         bank_account = {
             "accountNumber": generate_account_number(),
@@ -128,16 +129,19 @@ def add_bank_account(request):
             "amount": initial_amount,
         }
 
-        result = users_collection.update_one(
-            {"username": username},
-            {"$push": {"bankAccounts": bank_account}}
-        )
+        account_collection.insert_one(bank_account)
 
+        bank_account.pop("_id", None)
+
+        users_collection.update_one(
+            {"username": username},
+            {"$push": {"bankAccounts": bank_account}})
+    
         return Response({"message": "Bank account added successfully", "bankAccount": bank_account}, status=200)
 
     except Exception as e:
         print(f"Error: {e}")
-        return Response({"error": "Failed to create bank account."}, status=500)
+        return Response({"error": "An unexpected error occurred."}, status=500)
     
 
 
