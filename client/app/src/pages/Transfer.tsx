@@ -21,6 +21,7 @@ export default function Transfer() {
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
   const [useExternalAccount, setUseExternalAccount] = useState(false);
+  //const [externalAccountValue, setExternalAccountValue] = useState<string>("");
 
   const getConversionRate = async (
     fromCurrencyType: string,
@@ -184,13 +185,9 @@ export default function Transfer() {
                 type="checkbox"
                 id="externalAccountCheckbox"
                 className="form-check-input"
-                onChange={() => {
-                  if (useExternalAccount === false) {
-                    setUseExternalAccount(true);
-                  } else {
-                    setUseExternalAccount(false);
-                  }
-                }}
+                value={transferTo?.value}
+                checked={useExternalAccount}
+                onChange={() => setUseExternalAccount((prev) => !prev)}
               />
               <label
                 htmlFor="externalAccountCheckbox"
@@ -207,6 +204,13 @@ export default function Transfer() {
                 type="number"
                 className="w-100 fw-bold rounded ps-2"
                 placeholder="Enter account number"
+                value={transferTo?.value}
+                onChange={(e) =>
+                  setTransferTo({
+                    label: e.target.value,
+                    value: e.target.value,
+                  })
+                }
               />
             ) : (
               <Select
@@ -231,7 +235,7 @@ export default function Transfer() {
               type="number"
               min={0}
               className="w-100 fw-bold rounded ps-2"
-              placeholder="Select amount to transfer"
+              placeholder="Enter amount to transfer"
               onChange={(e) => setAmount(Number(e.target.value))}
             />
           </div>
@@ -245,7 +249,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {/*  {<button onClick={() => console.log(useExternalAccount)}>Test</button>} */}
+        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
       </div>
     </div>
   );
