@@ -26,7 +26,6 @@ export default function Transfer() {
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
   const [useExternalAccount, setUseExternalAccount] = useState(false);
-  //const [externalAccountValue, setExternalAccountValue] = useState<string>("");
 
   const getConversionRate = async (
     fromCurrencyType: string,
@@ -70,8 +69,18 @@ export default function Transfer() {
     try {
       const data: AccountInfo = await getBankAccount(accountNumber);
       setSelectedBankAccount(data);
+
+      // Update transferTo with external account data
+      setTransferTo({
+        label: `${data.accountNumber} - ${
+          data.accountName
+        } (${data.amount.toFixed(2)} ${data.currencyType})`,
+        value: data.accountNumber,
+      });
     } catch (error) {
       console.error("Error fetching bank account data:", error);
+      // Optionally handle errors here, e.g., set transferTo to null or show a message
+      setTransferTo(null);
     }
   };
 
@@ -97,10 +106,6 @@ export default function Transfer() {
     let convertedAmountToTransfer = amount;
 
     try {
-      if (useExternalAccount) {
-        transferToData.currencyType =
-          selectedBankAccount?.currencyType.toLowerCase() || "";
-      }
       // Check if currencies are different and convert if necessary
       if (transferFromData.currencyType !== transferToData.currencyType) {
         const conversionRate = await getConversionRate(
@@ -263,14 +268,12 @@ export default function Transfer() {
         </div>
         {
           <button
-            onClick={() =>
-              console.log(selectedBankAccount?.currencyType.toLowerCase())
-            }
+            onClick={() => console.log(selectedBankAccount?.accountNumber)}
           >
             Test
           </button>
         }
-        {<button onClick={() => console.log(transferFrom)}>Test</button>}
+        {<button onClick={() => console.log(transferTo?.label)}>Test</button>}
       </div>
     </div>
   );
