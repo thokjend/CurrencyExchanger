@@ -145,11 +145,26 @@ def create_bank_account(request):
         print(f"Error: {e}")
         return Response({"error": "An unexpected error occurred."}, status=500)
     
+@api_view(["GET"])
+def get_account_info(request, account):
+    try:
+        mongo_client = MongoDBClient()
+        account_collection = mongo_client.get_collection("accounts")
 
+        user_account = account_collection.find_one({"accountNumber": account}, {"_id":0})
+
+        if not user_account:
+            return Response({"error": "Account not found or no account available."}, status=404)
+
+        return Response({"Account": user_account}, status=200)
+
+    except Exception as e:
+        print(f"Error", {e})
+        return Response({"error": "Failed to fetch bank account information"}, status=500)    
 
 
 @api_view(["GET"])
-def get_bank_accounts_info(request, username):
+def get_user_bank_accounts(request, username):
     try:
         if not username:
             return Response({"error": "Username is required."}, status=400)

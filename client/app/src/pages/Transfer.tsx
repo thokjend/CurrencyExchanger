@@ -1,6 +1,9 @@
 import Header from "../components/Header";
 import Select, { SingleValue } from "react-select";
-import { getUserBankAccounts } from "../services/AccountInfoService";
+import {
+  getUserBankAccounts,
+  getBankAccount,
+} from "../services/AccountInfoService";
 import { useEffect, useState } from "react";
 
 interface AccountInfo {
@@ -17,6 +20,8 @@ interface Option {
 
 export default function Transfer() {
   const [accountInfo, setAccountInfo] = useState<AccountInfo[]>([]);
+  const [selectedBankAccount, setSelectedBankAccount] =
+    useState<AccountInfo | null>(null);
   const [transferFrom, setTransferFrom] = useState<Option | null>(null);
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
@@ -61,6 +66,15 @@ export default function Transfer() {
     }
   };
 
+  const fetchBankAccount = async (accountNumber: string) => {
+    try {
+      const data: AccountInfo = await getBankAccount(accountNumber);
+      setSelectedBankAccount(data);
+    } catch (error) {
+      console.error("Error fetching bank account data:", error);
+    }
+  };
+
   const transferAmount = async () => {
     const transferFromData = getTransferData(transferFrom);
     const transferToData = getTransferData(transferTo);
@@ -83,6 +97,10 @@ export default function Transfer() {
     let convertedAmountToTransfer = amount;
 
     try {
+      if (useExternalAccount) {
+        transferToData.currencyType =
+          selectedBankAccount?.currencyType.toLowerCase() || "";
+      }
       // Check if currencies are different and convert if necessary
       if (transferFromData.currencyType !== transferToData.currencyType) {
         const conversionRate = await getConversionRate(
@@ -204,12 +222,7 @@ export default function Transfer() {
                 className="w-100 fw-bold rounded ps-2"
                 placeholder="Enter account number"
                 value={transferTo?.value}
-                onChange={(e) =>
-                  setTransferTo({
-                    label: e.target.value,
-                    value: e.target.value,
-                  })
-                }
+                onChange={(e) => fetchBankAccount(e.target.value)}
               />
             ) : (
               <Select
@@ -243,12 +256,21 @@ export default function Transfer() {
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
             onClick={() => transferAmount()}
-            disabled={!transferFrom || !transferTo}
+            /* disabled={!transferFrom || !transferTo} */
           >
             Transfer
           </button>
         </div>
-        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
+        {
+          <button
+            onClick={() =>
+              console.log(selectedBankAccount?.currencyType.toLowerCase())
+            }
+          >
+            Test
+          </button>
+        }
+        {<button onClick={() => console.log(transferFrom)}>Test</button>}
       </div>
     </div>
   );
