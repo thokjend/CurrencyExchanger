@@ -9,5 +9,5 @@ urlpatterns = [
     path('login', views.login_user, name="login_user"),
     path('create', views.create_bank_account, name="add_bank_account"),
     path('account/info/<str:username>/', views.get_bank_accounts_info, name="get_bank_accounts_info"),
-    path('transfer/<str:username>/', views.transfer, name="transfer")
+    path('transfer/', views.transfer, name="transfer")
 ]

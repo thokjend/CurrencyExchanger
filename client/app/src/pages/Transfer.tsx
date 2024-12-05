@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import Select, { SingleValue } from "react-select";
-import { getBankAccountInfo } from "../services/AccountInfoService";
+import { getUserBankAccounts } from "../services/AccountInfoService";
 import { useEffect, useState } from "react";
 
 interface AccountInfo {
@@ -51,10 +51,10 @@ export default function Transfer() {
     return { availableAmount, currencyType };
   };
 
-  const fetchBankData = async () => {
+  const fetchUserBankAccounts = async () => {
     const username = localStorage.getItem("username");
     try {
-      const data: AccountInfo[] = await getBankAccountInfo(username);
+      const data: AccountInfo[] = await getUserBankAccounts(username);
       setAccountInfo(data);
     } catch (error) {
       console.error("Error fetching account data:", error);
@@ -62,7 +62,6 @@ export default function Transfer() {
   };
 
   const transferAmount = async () => {
-    const username = localStorage.getItem("username");
     const transferFromData = getTransferData(transferFrom);
     const transferToData = getTransferData(transferTo);
 
@@ -100,27 +99,24 @@ export default function Transfer() {
       }
 
       // Send transfer request to the backend
-      const response = await fetch(
-        `http://localhost:8000/transfer/${username}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            TransferFromAccount: transferFrom?.value,
-            TransferToAccount: transferTo?.value,
-            Amount: amountToTransfer,
-            ConvertedAmount: convertedAmountToTransfer,
-          }),
-        }
-      );
+      const response = await fetch(`http://localhost:8000/transfer/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          TransferFromAccount: transferFrom?.value,
+          TransferToAccount: transferTo?.value,
+          Amount: amountToTransfer,
+          ConvertedAmount: convertedAmountToTransfer,
+        }),
+      });
 
       const data = await response.json();
 
       if (response.ok) {
         alert(data.message || "Transfer successful!");
-        await fetchBankData();
+        await fetchUserBankAccounts();
       } else {
         alert(data.error || "Transfer failed. Please try again.");
       }
@@ -137,7 +133,7 @@ export default function Transfer() {
   }));
 
   useEffect(() => {
-    fetchBankData();
+    fetchUserBankAccounts();
   }, []);
 
   useEffect(() => {
@@ -252,7 +248,7 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {/* {<button onClick={() => console.log(transferTo?.value)}>Test</button>} */}
+        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
       </div>
     </div>
   );

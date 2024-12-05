@@ -1,4 +1,4 @@
-export const getBankAccountInfo = async (username: string | null) => {
+export const getUserBankAccounts = async (username: string | null) => {
   if (!username) {
     throw new Error("Username is required to fetch account info.");
   }

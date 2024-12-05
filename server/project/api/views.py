@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from .mongodb import MongoDBClient
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests, random, string
+from bson import ObjectId
 
 @api_view(["GET"])
 def get_currencies(request):
@@ -120,8 +121,11 @@ def create_bank_account(request):
         if not user:
             return Response({"error": "User not found"}, status=404)
         
+        account_id = str(ObjectId())
+
         # Create bank account
         bank_account = {
+            "_id": account_id,
             "accountNumber": generate_account_number(),
             "accountName": account_name,
             "currencyName": currency_name,
@@ -130,8 +134,6 @@ def create_bank_account(request):
         }
 
         account_collection.insert_one(bank_account)
-
-        bank_account.pop("_id", None)
 
         users_collection.update_one(
             {"username": username},
@@ -170,7 +172,7 @@ def get_bank_accounts_info(request, username):
 
 
 @api_view(["POST"])
-def transfer(request, username):
+def transfer(request):
     try:
         transfer_from_account = request.data.get("TransferFromAccount")
         transfer_to_account = request.data.get("TransferToAccount")
@@ -181,21 +183,31 @@ def transfer(request, username):
             return Response({"error": "Transfer amount must be greater than zero"}, status=400)
 
         mongo_client = MongoDBClient()
+        accounts_collection = mongo_client.get_collection("accounts")
         users_collection = mongo_client.get_collection("users")
 
         # transfer amount from account
-        filter_from = {"username" : username, "bankAccounts.accountNumber": transfer_from_account}
-        update_from = {"$inc": {"bankAccounts.$.amount": -amount}}
-        transfer_from_result = users_collection.update_one(filter_from, update_from)
+        filter_from = {"accountNumber" : transfer_from_account}
+        update_from = {"$inc": {"amount": -amount}}
+        accounts_collection.update_one(filter_from, update_from)
 
-        filter_to = {"username" : username, "bankAccounts.accountNumber": transfer_to_account}
-        update_to = {"$inc": {"bankAccounts.$.amount": converted_amount}}
-        transfer_to_result = users_collection.update_one(filter_to, update_to)
+        filter_to = {"accountNumber" : transfer_to_account}
+        update_to = {"$inc": {"amount": converted_amount}}
+        accounts_collection.update_one(filter_to, update_to)
+
+        users_collection.update_one(
+            {"bankAccounts.accountNumber": transfer_from_account},
+            {"$inc": {"bankAccounts.$.amount": -amount}}
+        )
+
+        users_collection.update_one(
+            {"bankAccounts.accountNumber": transfer_to_account},
+            {"$inc": {"bankAccounts.$.amount": converted_amount}}
+        )
 
         return Response({"message": "Amount successfully transfered"}, status=200)
-
-        
 
     except Exception as e:
         print(f"Error", {e})
         return Response({"error": "Failed to transfer selected amount"}, status=500) 
+    

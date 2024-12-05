@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Account from "../components/Account";
 import Header from "../components/Header";
-import { getBankAccountInfo } from "../services/AccountInfoService";
+import { getUserBankAccounts } from "../services/AccountInfoService";
 
 interface AccountInfo {
   accountName: string;
@@ -13,10 +13,10 @@ interface AccountInfo {
 export default function Main() {
   const [accountInfo, setAccountInfo] = useState<AccountInfo[]>([]);
 
-  const fetchBankData = async () => {
+  const fetchUserBankAccounts = async () => {
     const username = localStorage.getItem("username");
     try {
-      const data = await getBankAccountInfo(username);
+      const data = await getUserBankAccounts(username);
       setAccountInfo(data);
     } catch (error) {
       console.error("Error fetching account data:", error);
@@ -24,7 +24,7 @@ export default function Main() {
   };
 
   useEffect(() => {
-    fetchBankData();
+    fetchUserBankAccounts();
   }, []);
 
   return (
