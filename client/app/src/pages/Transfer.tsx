@@ -20,12 +20,11 @@ interface Option {
 
 export default function Transfer() {
   const [accountInfo, setAccountInfo] = useState<AccountInfo[]>([]);
-  const [selectedBankAccount, setSelectedBankAccount] =
-    useState<AccountInfo | null>(null);
   const [transferFrom, setTransferFrom] = useState<Option | null>(null);
   const [transferTo, setTransferTo] = useState<Option | null>(null);
   const [amount, setAmount] = useState<number>(0);
   const [useExternalAccount, setUseExternalAccount] = useState(false);
+  const [externalAccount, setExternalAccount] = useState("");
 
   const getConversionRate = async (
     fromCurrencyType: string,
@@ -66,27 +65,33 @@ export default function Transfer() {
   };
 
   const fetchBankAccount = async (accountNumber: string) => {
-    try {
-      const data: AccountInfo = await getBankAccount(accountNumber);
-      setSelectedBankAccount(data);
+    if (accountNumber.length !== 10) {
+      return;
+    } else {
+      try {
+        const data: AccountInfo = await getBankAccount(accountNumber);
+        //console.log(data);
+        //setSelectedBankAccount(data);
 
-      // Update transferTo with external account data
-      setTransferTo({
-        label: `${data.accountNumber} - ${
-          data.accountName
-        } (${data.amount.toFixed(2)} ${data.currencyType})`,
-        value: data.accountNumber,
-      });
-    } catch (error) {
-      console.error("Error fetching bank account data:", error);
-      // Optionally handle errors here, e.g., set transferTo to null or show a message
-      setTransferTo(null);
+        // Update transferTo with external account data
+        setTransferTo({
+          label: `${data.accountNumber} - ${
+            data.accountName
+          } (${data.amount.toFixed(2)} ${data.currencyType})`,
+          value: data.accountNumber,
+        });
+      } catch (error) {
+        console.error("Error fetching bank account data:", error);
+        setTransferTo(null);
+      }
     }
   };
 
   const transferAmount = async () => {
     const transferFromData = getTransferData(transferFrom);
     const transferToData = getTransferData(transferTo);
+    //console.log("From:", transferFromData);
+    //console.log("To:", transferToData);
 
     if (transferFrom?.value === transferTo?.value) {
       alert("You cannot transfer to the same account.");
@@ -204,7 +209,6 @@ export default function Transfer() {
                 type="checkbox"
                 id="externalAccountCheckbox"
                 className="form-check-input"
-                value={transferTo?.value}
                 checked={useExternalAccount}
                 onChange={() => {
                   setUseExternalAccount((prev) => !prev);
@@ -226,8 +230,8 @@ export default function Transfer() {
                 type="number"
                 className="w-100 fw-bold rounded ps-2"
                 placeholder="Enter account number"
-                value={transferTo?.value}
-                onChange={(e) => fetchBankAccount(e.target.value)}
+                value={externalAccount}
+                onChange={(e) => setExternalAccount(e.target.value)}
               />
             ) : (
               <Select
@@ -260,20 +264,24 @@ export default function Transfer() {
         <div className="text-center mt-4">
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
-            onClick={() => transferAmount()}
-            /* disabled={!transferFrom || !transferTo} */
+            onClick={async () => {
+              if (useExternalAccount) {
+                fetchBankAccount(externalAccount);
+                await transferAmount();
+              } else {
+                await transferAmount();
+              }
+            }}
+            /* disabled={
+              !transferFrom ||
+              (!transferTo && (!useExternalAccount || !selectedBankAccount))
+            } */
           >
             Transfer
           </button>
         </div>
-        {
-          <button
-            onClick={() => console.log(selectedBankAccount?.accountNumber)}
-          >
-            Test
-          </button>
-        }
-        {<button onClick={() => console.log(transferTo?.label)}>Test</button>}
+        {<button onClick={() => console.log(externalAccount)}>Test</button>}
+        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
       </div>
     </div>
   );
