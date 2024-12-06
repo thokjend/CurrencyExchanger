@@ -64,9 +64,10 @@ export default function Transfer() {
     }
   };
 
-  const fetchBankAccount = async (accountNumber: string) => {
+  const fetchBankAccount = async (accountNumber: string): Promise<boolean> => {
     if (accountNumber.length !== 10) {
-      return;
+      alert("Account number must be 10 digits.");
+      return false;
     } else {
       try {
         const data: AccountInfo = await getBankAccount(accountNumber);
@@ -80,30 +81,39 @@ export default function Transfer() {
           } (${data.amount.toFixed(2)} ${data.currencyType})`,
           value: data.accountNumber,
         });
+        return true;
       } catch (error) {
         console.error("Error fetching bank account data:", error);
         setTransferTo(null);
+        return false;
       }
+    }
+  };
+
+  const handleTransfer = async () => {
+    if (useExternalAccount) {
+      const isFetched = await fetchBankAccount(externalAccount);
+      if (isFetched) {
+        await transferAmount();
+      }
+    } else {
+      await transferAmount();
     }
   };
 
   const transferAmount = async () => {
     const transferFromData = getTransferData(transferFrom);
     const transferToData = getTransferData(transferTo);
-    //console.log("From:", transferFromData);
-    //console.log("To:", transferToData);
 
-    if (transferFrom?.value === transferTo?.value) {
+    if (!transferFrom?.value || !transferTo?.value) {
+      alert("Incorrect account information.");
+    } else if (transferFrom?.value === transferTo?.value) {
       alert("You cannot transfer to the same account.");
       return;
-    }
-
-    if (amount > transferFromData.availableAmount) {
+    } else if (amount > transferFromData.availableAmount) {
       alert("Insufficient funds");
       return;
-    }
-
-    if (amount <= 0) {
+    } else if (amount <= 0) {
       alert("Amount must be greater than zero.");
       return;
     }
@@ -264,14 +274,7 @@ export default function Transfer() {
         <div className="text-center mt-4">
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
-            onClick={async () => {
-              if (useExternalAccount) {
-                fetchBankAccount(externalAccount);
-                await transferAmount();
-              } else {
-                await transferAmount();
-              }
-            }}
+            onClick={handleTransfer}
             /* disabled={
               !transferFrom ||
               (!transferTo && (!useExternalAccount || !selectedBankAccount))
