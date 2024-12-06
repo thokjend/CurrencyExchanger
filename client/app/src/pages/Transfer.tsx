@@ -64,49 +64,55 @@ export default function Transfer() {
     }
   };
 
-  const fetchBankAccount = async (accountNumber: string): Promise<boolean> => {
+  const fetchBankAccount = async (
+    accountNumber: string
+  ): Promise<AccountInfo | null> => {
     if (accountNumber.length !== 10) {
       alert("Account number must be 10 digits.");
-      return false;
-    } else {
-      try {
-        const data: AccountInfo = await getBankAccount(accountNumber);
-        //console.log(data);
-        //setSelectedBankAccount(data);
+      return null;
+    }
 
-        // Update transferTo with external account data
-        setTransferTo({
-          label: `${data.accountNumber} - ${
-            data.accountName
-          } (${data.amount.toFixed(2)} ${data.currencyType})`,
-          value: data.accountNumber,
-        });
-        return true;
-      } catch (error) {
-        console.error("Error fetching bank account data:", error);
-        setTransferTo(null);
-        return false;
-      }
+    try {
+      const data: AccountInfo = await getBankAccount(accountNumber);
+      return data;
+    } catch (error) {
+      console.error("Error fetching bank account data:", error);
+      alert("Failed to fetch external account details.");
+      return null;
     }
   };
 
   const handleTransfer = async () => {
     if (useExternalAccount) {
-      const isFetched = await fetchBankAccount(externalAccount);
-      if (isFetched) {
-        await transferAmount();
+      try {
+        const accountData = await fetchBankAccount(externalAccount);
+        if (accountData) {
+          const externalAccountOption: Option = {
+            label: `${accountData.accountNumber} - ${
+              accountData.accountName
+            } (${accountData.amount.toFixed(2)} ${accountData.currencyType})`,
+            value: accountData.accountNumber,
+          };
+          await transferAmount(transferFrom, externalAccountOption);
+        }
+      } catch (error) {
+        console.error("Error transferring funds to external account:", error);
       }
     } else {
-      await transferAmount();
+      await transferAmount(transferFrom, transferTo);
     }
   };
 
-  const transferAmount = async () => {
+  const transferAmount = async (
+    transferFrom: Option | null,
+    transferTo: Option | null
+  ) => {
     const transferFromData = getTransferData(transferFrom);
     const transferToData = getTransferData(transferTo);
 
     if (!transferFrom?.value || !transferTo?.value) {
       alert("Incorrect account information.");
+      return;
     } else if (transferFrom?.value === transferTo?.value) {
       alert("You cannot transfer to the same account.");
       return;
@@ -117,7 +123,7 @@ export default function Transfer() {
       alert("Amount must be greater than zero.");
       return;
     }
-    let amountToTransfer = amount;
+
     let convertedAmountToTransfer = amount;
 
     try {
@@ -145,7 +151,7 @@ export default function Transfer() {
         body: JSON.stringify({
           TransferFromAccount: transferFrom?.value,
           TransferToAccount: transferTo?.value,
-          Amount: amountToTransfer,
+          Amount: amount,
           ConvertedAmount: convertedAmountToTransfer,
         }),
       });
@@ -283,8 +289,8 @@ export default function Transfer() {
             Transfer
           </button>
         </div>
-        {<button onClick={() => console.log(externalAccount)}>Test</button>}
-        {<button onClick={() => console.log(transferTo?.value)}>Test</button>}
+        {/*  {<button onClick={() => console.log(externalAccount)}>Test</button>}
+        {<button onClick={() => console.log(transferTo?.value)}>Test</button>} */}
       </div>
     </div>
   );
