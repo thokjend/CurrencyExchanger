@@ -5,6 +5,7 @@ import {
   getBankAccount,
 } from "../services/AccountInfoService";
 import { useEffect, useState } from "react";
+import TransferButton from "../components/TransferButton";
 
 interface AccountInfo {
   accountName: string;
@@ -276,15 +277,12 @@ export default function Transfer() {
             />
           </div>
         </div>
-        <div className="text-center mt-4">
-          <button
-            className="btn btn-primary w-100 fw-bold fs-5"
-            onClick={handleTransfer}
-            disabled={!transferFrom || (!transferTo && externalAccount == "")}
-          >
-            Transfer
-          </button>
-        </div>
+        <TransferButton
+          externalAccount={externalAccount}
+          transferTo={transferTo}
+          transferFrom={transferFrom}
+          onclick={handleTransfer}
+        />
       </div>
     </div>
   );
