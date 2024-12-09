@@ -38,8 +38,6 @@ export default function Transfer() {
         throw new Error("Failed to fetch conversion rate data");
       }
       const data = await response.json();
-      /* console.log(data[fromCurrencyType][toCurrencyType]);
-      console.log(toCurrencyType); */
       return data[fromCurrencyType][toCurrencyType]; // Return the conversion rate to the target currency
     } catch (error) {
       console.error("Fetch error:", error);
@@ -229,6 +227,7 @@ export default function Transfer() {
                 onChange={() => {
                   setUseExternalAccount((prev) => !prev);
                   setTransferTo(null);
+                  setExternalAccount("");
                 }}
               />
               <label
@@ -281,16 +280,11 @@ export default function Transfer() {
           <button
             className="btn btn-primary w-100 fw-bold fs-5"
             onClick={handleTransfer}
-            /* disabled={
-              !transferFrom ||
-              (!transferTo && (!useExternalAccount || !selectedBankAccount))
-            } */
+            disabled={!transferFrom || (!transferTo && externalAccount == "")}
           >
             Transfer
           </button>
         </div>
-        {/*  {<button onClick={() => console.log(externalAccount)}>Test</button>}
-        {<button onClick={() => console.log(transferTo?.value)}>Test</button>} */}
       </div>
     </div>
   );
