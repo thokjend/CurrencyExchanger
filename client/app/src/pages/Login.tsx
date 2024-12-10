@@ -75,7 +75,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
           />
           <button
-            className="mt-2 w-75 fs-5 fw-bold"
+            className="btn btn-primary mt-2 w-75 fs-5 fw-bold"
             onClick={() => handleData(username, password, registerMode)}
             disabled={username === "" || password === ""}
           >

@@ -26,6 +26,8 @@ export default function Transfer() {
   const [amount, setAmount] = useState<number>(0);
   const [useExternalAccount, setUseExternalAccount] = useState(false);
   const [externalAccount, setExternalAccount] = useState("");
+  const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const getConversionRate = async (
     fromCurrencyType: string,
@@ -67,7 +69,8 @@ export default function Transfer() {
     accountNumber: string
   ): Promise<AccountInfo | null> => {
     if (accountNumber.length !== 10) {
-      alert("Account number must be 10 digits.");
+      setMessage("Account number must be 10 digits");
+      setIsSuccess(false);
       return null;
     }
 
@@ -76,7 +79,8 @@ export default function Transfer() {
       return data;
     } catch (error) {
       console.error("Error fetching bank account data:", error);
-      alert("Failed to fetch external account details.");
+      setMessage("Failed to fetch account detalis");
+      setIsSuccess(false);
       return null;
     }
   };
@@ -110,16 +114,20 @@ export default function Transfer() {
     const transferToData = getTransferData(transferTo);
 
     if (!transferFrom?.value || !transferTo?.value) {
-      alert("Incorrect account information.");
+      setMessage("Incorrect account information");
+      setIsSuccess(false);
       return;
     } else if (transferFrom?.value === transferTo?.value) {
-      alert("You cannot transfer to the same account.");
+      setMessage("You cannot transfer to the same account");
+      setIsSuccess(false);
       return;
     } else if (amount > transferFromData.availableAmount) {
-      alert("Insufficient funds");
+      setMessage("Insufficient funds");
+      setIsSuccess(false);
       return;
     } else if (amount <= 0) {
-      alert("Amount must be greater than zero.");
+      setMessage("Amount must be greater than zero");
+      setIsSuccess(false);
       return;
     }
 
@@ -134,7 +142,8 @@ export default function Transfer() {
         );
 
         if (!conversionRate) {
-          alert("Failed to fetch conversion rate. Transfer aborted.");
+          setMessage("Failed to fetch conversion rate. Transfer aborted.");
+          setIsSuccess(false);
           return;
         }
 
@@ -158,7 +167,8 @@ export default function Transfer() {
       const data = await response.json();
 
       if (response.ok) {
-        alert(data.message || "Transfer successful!");
+        setMessage("Amount successfully transfered");
+        setIsSuccess(true);
         await fetchUserBankAccounts();
       } else {
         alert(data.error || "Transfer failed. Please try again.");
@@ -284,6 +294,15 @@ export default function Transfer() {
           onclick={handleTransfer}
         />
       </div>
+      {message && (
+        <div
+          className={`alert mt-3 w-25 fs-5 fw-bold text-center ${
+            isSuccess ? "alert-success" : "alert-danger"
+          }`}
+        >
+          {message}
+        </div>
+      )}
     </div>
   );
 }

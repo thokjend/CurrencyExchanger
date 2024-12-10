@@ -116,7 +116,9 @@ export default function CreateBankAccount() {
         </form>
       </div>
       {successMessage && (
-        <div className="mt-3 alert alert-success">{successMessage}</div>
+        <div className="mt-4 alert alert-success fs-5 fw-bold">
+          {successMessage}
+        </div>
       )}
       {/* {<button onClick={() => console.log(currencyType?.label)}>test</button>} */}
     </div>
