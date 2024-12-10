@@ -120,7 +120,6 @@ export default function CreateBankAccount() {
           {successMessage}
         </div>
       )}
-      {/* {<button onClick={() => console.log(currencyType?.label)}>test</button>} */}
     </div>
   );
 }
