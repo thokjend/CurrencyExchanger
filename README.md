@@ -13,6 +13,7 @@ This is a full-stack banking application built using React with TypeScript front
 - **User Authentication:** Users can register and log in with their credentials.
 - **Bank Account Management:** Create, view, and manage multiple bank accounts in one place.
 - **Funds Transfer:** Transfer funds between your own accounts or send money to another user. The app automatically converts the amount to the appropriate currency if the accounts involved use different currencies
+- **Currency Conversion:** Retrieve real-time exchange rates for different currencies and cryptocurrencies
 
 ## Tech Stack
 
