@@ -7,3 +7,16 @@ This is a full-stack banking application built using React with TypeScript front
 - Retrieve real-time conversion rates for over 200 currencies, including popular cryptocurrencies, using the [Exchange api](https://github.com/fawazahmed0/exchange-api?tab=readme-ov-file)
 
 - Compare currency trends visually through interactive line charts powered by the [Line chart api](https://mui.com/x/api/charts/line-chart/)
+
+## Features
+
+- **User Authentication:** Users can register and log in with their credentials.
+- **Bank Account Management:** Create, view, and manage multiple bank accounts in one place.
+- **Funds Transfer:** Transfer money between your own accounts or to another user the amount is also converted if the two bank accounts use different currency
+
+## Tech Stack
+
+- **Frontend:** React, TypeScript
+- **Backend:** Python, Django
+- **Databse:** MongoDB
+- **API:** [Line chart api](https://mui.com/x/api/charts/line-chart/), [Exchange api](https://github.com/fawazahmed0/exchange-api?tab=readme-ov-file)
