@@ -250,3 +250,21 @@ def store_conversion_rates(request):
     except Exception as e:
         print(f"Error: {e}")
         return Response({"error": "Failed to store conversion rates."}, status=500)
+    
+
+api_view(["GET"])
+def get_stored_conversion_rates(request, base, target):
+    try:
+        mongo_client = MongoDBClient()
+        rates_collection = mongo_client.get_collection("conversionRates")
+
+        result = rates_collection.find_one({"baseCurrency": base, "targetCurrency": target}, {"_id":0, "rates":1})
+        
+        if result and "rates" in result:
+           return Response({"Conversion rates": result["rates"]}, status=200)
+        else:
+            return Response({"error": "Conversion rate not found."}, status=404)
+
+    except Exception as e:
+            print(f"Error: {e}")
+            return Response({"error": "Failed to get conversion rates."}, status=500) 
