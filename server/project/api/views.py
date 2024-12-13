@@ -226,3 +226,27 @@ def transfer(request):
         print(f"Error", {e})
         return Response({"error": "Failed to transfer selected amount"}, status=500) 
     
+
+@api_view(["POST"])
+def store_conversion_rates(request):
+    try:
+        base_currency = request.data.get("BaseCurrency")
+        target_currency = request.data.get("TargetCurrency")
+        rates = request.data.get("Rates")
+
+        if not base_currency or not target_currency or not rates:
+            return Response({"error": "Invalid data format."}, status=400)
+        
+        mongo_client = MongoDBClient()
+        rates_collection = mongo_client.get_collection("conversionRates")
+
+        rates_collection.insert_one({
+            "baseCurrency": base_currency,
+            "targetCurrency": target_currency,
+            "rates": rates,
+        })
+
+        return Response({"message": "Conversion rates stored successfully."}, status=201)
+    except Exception as e:
+        print(f"Error: {e}")
+        return Response({"error": "Failed to store conversion rates."}, status=500)
