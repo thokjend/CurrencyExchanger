@@ -109,16 +109,20 @@ export default function CurrencyConverter() {
       }
 
       const data = await response.json();
-      const rates = data.rates.map((rate: { date: string; rate: number }) => ({
-        date: rate.date,
-        rate: rate.rate,
-      }));
+      const rates = data["Conversion rates"].map(
+        (rate: { date: string; rate: number }) => ({
+          date: rate.date,
+          rate: rate.rate,
+        })
+      );
 
       setStoreDates(rates);
       console.log("Fetched stored conversion rates successfully");
     } catch (error) {
       console.error("Error fetching conversion rates", error);
       await conversionRatesByDate();
+    } finally {
+      setIsDoneLoading(true);
     }
   };
 
@@ -168,7 +172,8 @@ export default function CurrencyConverter() {
 
   useEffect(() => {
     getConversionRate();
-    conversionRatesByDate();
+    searchForConversionRates();
+    //conversionRatesByDate();
   }, [convertTo, convertFrom]);
 
   const convertedAmount =

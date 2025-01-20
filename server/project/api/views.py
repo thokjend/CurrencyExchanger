@@ -252,7 +252,7 @@ def store_conversion_rates(request):
         return Response({"error": "Failed to store conversion rates."}, status=500)
     
 
-api_view(["GET"])
+@api_view(["GET"])
 def get_stored_conversion_rates(request, base, target):
     try:
         mongo_client = MongoDBClient()
