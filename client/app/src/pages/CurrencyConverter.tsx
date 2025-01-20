@@ -28,6 +28,7 @@ export default function CurrencyConverter() {
   const [isDoneLoading, setIsDoneLoading] = useState(false);
 
   console.log(storeDates);
+  //console.log(convertFrom?.value);
   //console.log(storeDates.map((item) => item.date).length);
 
   const getCurrencies = async () => {
@@ -94,6 +95,30 @@ export default function CurrencyConverter() {
       console.log(data.message);
     } catch (error) {
       console.error("Error in storing conversion rates:", error);
+    }
+  };
+
+  const searchForConversionRates = async () => {
+    if (!convertFrom || !convertTo) return;
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/conversionRates/${convertFrom?.value}/${convertTo?.value}/`
+      );
+      if (!response.ok) {
+        throw new Error("No stored conversion rates found");
+      }
+
+      const data = await response.json();
+      const rates = data.rates.map((rate: { date: string; rate: number }) => ({
+        date: rate.date,
+        rate: rate.rate,
+      }));
+
+      setStoreDates(rates);
+      console.log("Fetched stored conversion rates successfully");
+    } catch (error) {
+      console.error("Error fetching conversion rates", error);
+      await conversionRatesByDate();
     }
   };
 

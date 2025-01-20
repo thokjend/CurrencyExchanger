@@ -268,3 +268,6 @@ def get_stored_conversion_rates(request, base, target):
     except Exception as e:
             print(f"Error: {e}")
             return Response({"error": "Failed to get conversion rates."}, status=500) 
+
+
+
