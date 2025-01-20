@@ -26,6 +26,7 @@ export default function CurrencyConverter() {
 
   const [storeDates, setStoreDates] = useState<RateByDate[]>([]);
   const [isDoneLoading, setIsDoneLoading] = useState(false);
+  const [conversionRatesFetched, setConversionRatesFetched] = useState(false);
 
   console.log(storeDates);
   //console.log(convertFrom?.value);
@@ -151,9 +152,11 @@ export default function CurrencyConverter() {
           rates.push({ date: formattedDate, rate: conversionRate });
         }
       }
+
       setStoreDates(rates.reverse());
-      await storeConversionRates();
-      //console.log(storeDates);
+      setConversionRatesFetched(true);
+
+      //await storeConversionRates();
     } catch (error) {
       console.error("Error in fetching conversion rates:", error);
     } finally {
@@ -165,6 +168,13 @@ export default function CurrencyConverter() {
     setConvertFrom(convertTo);
     setConvertTo(convertFrom);
   };
+
+  useEffect(() => {
+    if (conversionRatesFetched) {
+      storeConversionRates();
+      setConversionRatesFetched(false);
+    }
+  }, [conversionRatesFetched]);
 
   useEffect(() => {
     getCurrencies();
