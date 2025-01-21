@@ -99,6 +99,33 @@ export default function CurrencyConverter() {
     }
   };
 
+  const deleteOldRates = async () => {
+    try {
+      const response = await fetch(
+        "http://127.0.0.1:8000/api/delete/conversionRates/",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            BaseCurrency: convertFrom?.value,
+            TargetCurrency: convertTo?.value,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete old conversion rates");
+      }
+
+      const data = await response.json();
+      console.log("Old conversion rates deleted:", data.message);
+    } catch (error) {
+      console.error("Error deleting conversion rates:", error);
+    }
+  };
+
   const searchForConversionRates = async () => {
     if (!convertFrom || !convertTo) return;
     try {
@@ -118,6 +145,14 @@ export default function CurrencyConverter() {
       );
 
       setStoreDates(rates);
+
+      const lastStoredDate = storeDates[storeDates.length - 1].date;
+      const todayDate = new Date().toISOString().split("T")[0];
+
+      if (lastStoredDate != todayDate) {
+        await deleteOldRates();
+      }
+
       console.log("Fetched stored conversion rates successfully");
     } catch (error) {
       console.error("Error fetching conversion rates", error);
