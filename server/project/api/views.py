@@ -270,4 +270,19 @@ def get_stored_conversion_rates(request, base, target):
             return Response({"error": "Failed to get conversion rates."}, status=500) 
 
 
+@api_view(["DELETE"])
+def delete_rates(request, base, target):
+    try:
+        mongo_client = MongoDBClient()
+        rates_collection = mongo_client.get_collection("conversionRates")
 
+        result = rates_collection.delete_one({"baseCurrency": base, "targetCurrency": target})
+
+        if result.deleted_count > 0:
+            return Response({"message": "Conversion rates deleted successfully"}, status=200)
+        else:
+            return Response({"error": "No matching conversion rates found"}, status=404)
+
+    except Exception as e:
+        print(f"Error {e}")
+        return Response({"error:" "Failed to delete conversion rates"}, status=500)

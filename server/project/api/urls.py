@@ -12,5 +12,6 @@ urlpatterns = [
     path('account/<str:account>/', views.get_account_info, name="get_account_info"),
     path('transfer/', views.transfer, name="transfer"),
     path('api/store/conversionRates/', views.store_conversion_rates, name='stored_conversion_rates'),
-    path('api/conversionRates/<str:base>/<str:target>/', views.get_stored_conversion_rates, name='get_stored_conversion_rates')
+    path('api/conversionRates/<str:base>/<str:target>/', views.get_stored_conversion_rates, name='get_stored_conversion_rates'),
+    path('api/delete/conversionRates/<str:base>/<str:target>/', views.delete_rates, name='delete_rates')
 ]
