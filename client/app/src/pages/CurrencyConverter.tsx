@@ -118,35 +118,39 @@ export default function CurrencyConverter() {
 
   const searchForConversionRates = async () => {
     if (!convertFrom || !convertTo) return;
+
     try {
       const response = await fetch(
         `http://127.0.0.1:8000/api/conversionRates/${convertFrom?.value}/${convertTo?.value}/`
       );
-      if (!response.ok) {
-        throw new Error("No stored conversion rates found");
-      }
 
-      const data = await response.json();
-      const rates = data["Conversion rates"].map(
-        (rate: { date: string; rate: number }) => ({
-          date: rate.date,
-          rate: rate.rate,
-        })
-      );
+      if (response.ok) {
+        const data = await response.json();
+        const rates = data["Conversion rates"].map(
+          (rate: { date: string; rate: number }) => ({
+            date: rate.date,
+            rate: rate.rate,
+          })
+        );
 
-      setStoreDates(rates);
+        const lastStoredDate = rates[rates.length - 1]?.date;
+        const todayDate = new Date().toISOString().split("T")[0];
 
-      const lastStoredDate = storeDates[storeDates.length - 1].date;
-      const todayDate = new Date().toISOString().split("T")[0];
-
-      if (lastStoredDate != todayDate) {
-        await deleteOldRates();
+        if (lastStoredDate !== todayDate) {
+          console.log("Outdated data found. Deleting old data...");
+          await deleteOldRates();
+          console.log("Fetching new data...");
+          await conversionRatesByDate();
+        } else {
+          console.log("Using stored conversion rates.");
+          setStoreDates(rates);
+        }
+      } else {
+        console.log("No stored data found. Fetching from API...");
         await conversionRatesByDate();
       }
-
-      console.log("Fetched stored conversion rates successfully");
     } catch (error) {
-      console.error("Error fetching conversion rates", error);
+      console.error("Error fetching stored conversion rates:", error);
       await conversionRatesByDate();
     } finally {
       setIsDoneLoading(true);
