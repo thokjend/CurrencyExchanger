@@ -23,7 +23,6 @@ export default function CurrencyConverter() {
     string,
     number
   > | null>(null);
-
   const [storeDates, setStoreDates] = useState<RateByDate[]>([]);
   const [isDoneLoading, setIsDoneLoading] = useState(false);
   const [conversionRatesFetched, setConversionRatesFetched] = useState(false);
